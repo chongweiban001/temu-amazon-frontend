@@ -1,18 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
-    <title>亚马逊-Temu选品系统前端</title>
-    <meta name="description" content="亚马逊-Temu选品系统前端">
-    <!-- 其它head内容 -->
+    <title>亚马逊-Temu选品系统首页</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background: #223a5e;
+            padding: 10px 0;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 20px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #223a5e;
+        }
+
+        .feature-list {
+            margin-top: 30px;
+        }
+
+        .feature-list li {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 
 <body>
-
-    <h1>亚马逊-Temu选品系统前端</h1>
-    <p>欢迎使用本系统！</p>
-
+    <nav>
+        <ul>
+            <li><a href="index.html">首页</a></li>
+            <li><a href="smart_selection.html">智能选品</a></li>
+            <li><a href="platform_comparison.html">多平台对比</a></li>
+            <li><a href="category_monitor.html">类目监控</a></li>
+            <li><a href="price_analysis.html">价格分析</a></li>
+            <li><a href="data_crawl.html">数据采集</a></li>
+            <li><a href="user_center.html">用户中心</a></li>
+            <li><a href="help.html">帮助</a></li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>亚马逊-Temu选品系统</h1>
+        <p>跨境电商智能选品、数据分析与决策支持平台</p>
+        <ul class="feature-list">
+            <li>✔ 智能选品推荐，自动化决策支持</li>
+            <li>✔ 多平台多维度数据对比分析</li>
+            <li>✔ 类目监控与自动预警</li>
+            <li>✔ 价格与利润趋势分析</li>
+            <li>✔ 数据采集与批量导出</li>
+            <li>✔ 个性化用户中心与消息通知</li>
+        </ul>
+        <p style="margin-top:30px;"><a href="smart_selection.html"
+                style="color:#fff;background:#223a5e;padding:10px 20px;border-radius:5px;text-decoration:none;">立即体验智能选品</a>
+        </p>
+    </div>
 </body>
 
 </html>
