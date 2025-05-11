@@ -1,0 +1,289 @@
+/* Temu选品分析系统 - 自定义样式 */
+
+:root {
+  --primary: #3949ab;
+  --primary-dark: #303f9f;
+  --primary-light: #5c6bc0;
+  --amazon: #ff9900;
+  --amazon-dark: #e68a00;
+  --temu: #ff5252;
+  --temu-dark: #e04848;
+  --success: #42b883;
+  --warning: #f7ba2a;
+  --danger: #e53935;
+  --light: #f5f7fa;
+  --light-gray: #e2e8f0;
+  --dark-gray: #64748b;
+  --dark: #2d3748;
+  --shadow: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --transition: all 0.3s ease;
+}
+
+/* 暗色主题变量 */
+.dark-theme {
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #818cf8;
+  --amazon: #f59e0b;
+  --amazon-dark: #d97706;
+  --temu: #ef4444;
+  --temu-dark: #dc2626;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --light: #1e293b;
+  --light-gray: #334155;
+  --dark-gray: #94a3b8;
+  --dark: #f8fafc;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* 全局样式 */
+body {
+  background-color: var(--light);
+  color: var(--dark);
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* 暗色主题样式覆盖 */
+.dark-theme body {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* 导航栏样式 */
+.navbar {
+  background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1rem;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: white !important;
+  letter-spacing: -0.5px;
+}
+
+.navbar .nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+  transition: var(--transition);
+  position: relative;
+  padding: 0.5rem 1rem;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+  color: white !important;
+}
+
+.navbar .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: var(--transition);
+  transform: translateX(-50%);
+  opacity: 0;
+}
+
+.navbar .nav-link:hover::after,
+.navbar .nav-link.active::after {
+  width: 80%;
+  opacity: 1;
+}
+
+/* 卡片样式 */
+.card {
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  border-bottom: none;
+  padding: 1.25rem 1.5rem;
+  background-color: #fff;
+  font-weight: 600;
+}
+
+.card-header.bg-primary {
+  background: linear-gradient(45deg, var(--primary-dark), var(--primary)) !important;
+  color: white;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* 按钮样式 */
+.btn {
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 500;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
+}
+
+.btn:hover::before {
+  width: 300%;
+  height: 300%;
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, var(--primary-dark), var(--primary));
+  border: none;
+}
+
+.btn-amazon {
+  background: linear-gradient(45deg, var(--amazon-dark), var(--amazon));
+  border: none;
+  color: white;
+}
+
+.btn-temu {
+  background: linear-gradient(45deg, var(--temu-dark), var(--temu));
+  border: none;
+  color: white;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+/* 主页样式 */
+.hero-section {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  color: white;
+  padding: 4rem 0;
+  margin-bottom: 3rem;
+  border-radius: 0 0 2rem 2rem;
+}
+
+.hero-section h1 {
+  font-weight: 800;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+.hero-section p {
+  opacity: 0.9;
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+/* 数据看板 */
+.dashboard-heading {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.dashboard-heading h2 {
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.dashboard-heading p {
+  color: var(--dark-gray);
+  margin-bottom: 0;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* 数据卡片 */
+.stats-card {
+  background: linear-gradient(135deg, var(--light), #ffffff);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  transition: var(--transition);
+  border-left: 4px solid var(--primary);
+  overflow: hidden;
+  position: relative;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.stats-card .value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.stats-card .label {
+  font-size: 0.9rem;
+  color: var(--dark-gray);
+}
+
+.amazon-card {
+  border-left-color: var(--amazon);
+}
+
+.amazon-card .value {
+  color: var(--amazon);
+}
+
+.temu-card {
+  border-left-color: var(--temu);
+}
+
+.temu-card .value {
+  color: var(--temu);
+} 

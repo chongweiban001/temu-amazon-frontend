@@ -1,0 +1,237 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}类目监控 - 亚马逊-Temu跨境选品分析系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-eye me-2"></i>亚马逊类目监控</h5>
+                <button class="btn btn-sm btn-light" id="sync-now-btn">
+                    <i class="bi bi-arrow-repeat me-1"></i>立即同步
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <form action="{{ url_for('category_monitor') }}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">选择类目</label>
+                                <select class="form-select" name="category">
+                                    <option value="all">所有类目</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">时间范围</label>
+                                <select class="form-select" name="time_range">
+                                    <option value="7">最近7天</option>
+                                    <option value="30" selected>最近30天</option>
+                                    <option value="90">最近90天</option>
+                                </select>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-search me-1"></i>查询
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">类目监控状态</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span>上次同步时间:</span>
+                                    <span class="text-primary">2023-12-15 14:30</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span>监控类目数量:</span>
+                                    <span class="text-primary">145</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span>高风险类目数量:</span>
+                                    <span class="text-danger">12</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>近期变更类目:</span>
+                                    <span class="text-warning">8</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs mb-3" id="categoryTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="risk-tab" data-bs-toggle="tab" data-bs-target="#risk" type="button" role="tab">
+                            高风险类目
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="changes-tab" data-bs-toggle="tab" data-bs-target="#changes" type="button" role="tab">
+                            近期变更
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                            全部类目
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="categoryTabsContent">
+                    <!-- 高风险类目 -->
+                    <div class="tab-pane fade show active" id="risk" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>类目ID</th>
+                                        <th>类目路径</th>
+                                        <th>风险级别</th>
+                                        <th>风险原因</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>health-household</td>
+                                        <td>Health & Household</td>
+                                        <td><span class="badge bg-danger">高风险</span></td>
+                                        <td>含健康相关产品</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>beauty</td>
+                                        <td>Beauty & Personal Care</td>
+                                        <td><span class="badge bg-warning">中风险</span></td>
+                                        <td>含化妆品</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>kids-toys</td>
+                                        <td>Kids & Toys</td>
+                                        <td><span class="badge bg-danger">高风险</span></td>
+                                        <td>儿童类目监管严格</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">查看详情</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- 近期变更 -->
+                    <div class="tab-pane fade" id="changes" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>类目ID</th>
+                                        <th>变更类型</th>
+                                        <th>原路径</th>
+                                        <th>新路径</th>
+                                        <th>变更时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>electronics</td>
+                                        <td><span class="badge bg-info">结构变更</span></td>
+                                        <td>Electronics</td>
+                                        <td>Electronics & Computers</td>
+                                        <td>2023-12-10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>kitchen</td>
+                                        <td><span class="badge bg-primary">子类目新增</span></td>
+                                        <td>Kitchen & Dining</td>
+                                        <td>Kitchen & Dining</td>
+                                        <td>2023-12-08</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- 全部类目 -->
+                    <div class="tab-pane fade" id="all" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>类目ID</th>
+                                        <th>类目路径</th>
+                                        <th>最后更新</th>
+                                        <th>风险级别</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>electronics</td>
+                                        <td>Electronics & Computers</td>
+                                        <td>2023-12-10</td>
+                                        <td><span class="badge bg-success">低风险</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>home-garden</td>
+                                        <td>Home & Garden</td>
+                                        <td>2023-12-05</td>
+                                        <td><span class="badge bg-success">低风险</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>beauty</td>
+                                        <td>Beauty & Personal Care</td>
+                                        <td>2023-12-01</td>
+                                        <td><span class="badge bg-warning">中风险</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 同步按钮点击事件
+    const syncBtn = document.getElementById('sync-now-btn');
+    if (syncBtn) {
+        syncBtn.addEventListener('click', function() {
+            // 显示加载中状态
+            syncBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>同步中...';
+            syncBtn.disabled = true;
+            
+            // 这里应该发送同步请求
+            // 模拟同步过程
+            setTimeout(function() {
+                syncBtn.innerHTML = '<i class="bi bi-arrow-repeat me-1"></i>立即同步';
+                syncBtn.disabled = false;
+                
+                // 显示成功消息
+                alert('类目数据同步成功！');
+                
+                // 刷新页面（实际应用中应该使用AJAX更新数据）
+                window.location.reload();
+            }, 2000);
+        });
+    }
+});
+</script>
+{% endblock %} 

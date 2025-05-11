@@ -1,0 +1,652 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}首页 - 亚马逊-Temu跨境选品分析系统{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亚马逊-Temu跨境选品分析系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #1abc9c;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            font-weight: bold;
+            border-bottom: none;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stats-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .stats-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stats-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .module-card {
+            height: 100%;
+        }
+        
+        .module-card .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .module-card .card-text {
+            flex-grow: 1;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+        
+        .border-left-primary {
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .border-left-success {
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .border-left-warning {
+            border-left: 4px solid var(--warning-color);
+        }
+        
+        .border-left-danger {
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .text-primary {
+            color: var(--primary-color) !important;
+        }
+        
+        .text-success {
+            color: var(--success-color) !important;
+        }
+        
+        .text-warning {
+            color: var(--warning-color) !important;
+        }
+        
+        .text-danger {
+            color: var(--danger-color) !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">亚马逊-Temu跨境选品分析系统</h1>
+                <div>
+                    <span class="badge bg-success">个人版</span>
+                    <span class="badge bg-info ms-2">v1.0</span>
+                </div>
+            </div>
+            <nav class="mt-2">
+                <ul class="nav">
+                    <li class="nav-item"><a href="#" class="nav-link active">控制中心</a></li>
+                    <li class="nav-item"><a href="data_collection.html" class="nav-link">数据采集</a></li>
+                    <li class="nav-item"><a href="advanced_selection.html" class="nav-link">智能选品</a></li>
+                    <li class="nav-item"><a href="visualization.html" class="nav-link">数据可视化</a></li>
+                    <li class="nav-item"><a href="profit_calculator.html" class="nav-link">利润计算</a></li>
+                    <li class="nav-item"><a href="temu_integration.html" class="nav-link">Temu集成</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container py-4">
+        <!-- 顶部统计卡片 -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">总产品数</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">2,458</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-box-seam fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">高潜力产品</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">312</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-graph-up-arrow fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">待上传产品</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-upload fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-danger shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">高风险产品</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">73</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="bi bi-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 功能模块卡片 -->
+        <h4 class="mb-3">功能模块</h4>
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4">
+                <div class="card module-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-cloud-download text-primary me-2"></i>
+                            数据采集
+                        </h5>
+                        <p class="card-text">从亚马逊平台自动采集产品数据，支持多种频道和区域。</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-success">运行中</span>
+                                <small class="text-muted ms-2">上次更新: 今天</small>
+                            </div>
+                            <a href="data_collection.html" class="btn btn-sm btn-outline-primary">进入</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card module-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-lightbulb text-warning me-2"></i>
+                            智能选品
+                        </h5>
+                        <p class="card-text">基于多维度筛选条件，自动推荐高潜力产品。</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-success">运行中</span>
+                                <small class="text-muted ms-2">上次更新: 昨天</small>
+                            </div>
+                            <a href="advanced_selection.html" class="btn btn-sm btn-outline-primary">进入</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card module-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-bar-chart text-info me-2"></i>
+                            数据可视化
+                        </h5>
+                        <p class="card-text">以图表形式直观展示产品数据和市场趋势。</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-success">运行中</span>
+                                <small class="text-muted ms-2">上次更新: 昨天</small>
+                            </div>
+                            <a href="visualization.html" class="btn btn-sm btn-outline-primary">进入</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card module-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-currency-dollar text-success me-2"></i>
+                            利润计算
+                        </h5>
+                        <p class="card-text">考虑各种成本因素，精确计算产品潜在利润。</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-success">运行中</span>
+                                <small class="text-muted ms-2">上次更新: 前天</small>
+                            </div>
+                            <a href="profit_calculator.html" class="btn btn-sm btn-outline-primary">进入</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card module-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-arrow-left-right text-primary me-2"></i>
+                            产品对比
+                        </h5>
+                        <p class="card-text">多产品对比分析，辅助选择最佳产品。</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-warning">待更新</span>
+                                <small class="text-muted ms-2">上次更新: 3天前</small>
+                            </div>
+                            <a href="product_comparison.html" class="btn btn-sm btn-outline-primary">进入</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="card module-card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-arrow-up-right-circle text-danger me-2"></i>
+                            Temu集成
+                        </h5>
+                        <p class="card-text">一键将选定产品上传至Temu平台。</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-success">运行中</span>
+                                <small class="text-muted ms-2">上次更新: 今天</small>
+                            </div>
+                            <a href="temu_integration.html" class="btn btn-sm btn-outline-primary">进入</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据概览区域 -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="bi bi-graph-up me-2"></i>最近销售趋势
+                        </h6>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                最近30天
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li><a class="dropdown-item" href="#">最近7天</a></li>
+                                <li><a class="dropdown-item" href="#">最近30天</a></li>
+                                <li><a class="dropdown-item" href="#">最近90天</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="salesTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="bi bi-pie-chart me-2"></i>类目分布
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 最近活动和快速操作 -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="bi bi-clock-history me-2"></i>最近活动
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-log">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-success rounded-circle p-2 me-3">
+                                    <i class="bi bi-check text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">数据采集完成</h6>
+                                    <p class="small text-muted mb-0">成功采集152条产品数据</p>
+                                    <small class="text-muted">今天 10:25</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary rounded-circle p-2 me-3">
+                                    <i class="bi bi-arrow-up text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">产品上传Temu</h6>
+                                    <p class="small text-muted mb-0">成功上传5个产品到Temu平台</p>
+                                    <small class="text-muted">今天 09:18</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-warning rounded-circle p-2 me-3">
+                                    <i class="bi bi-exclamation text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">类目风险预警</h6>
+                                    <p class="small text-muted mb-0">家居类目存在潜在风险</p>
+                                    <small class="text-muted">昨天 15:42</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="bg-info rounded-circle p-2 me-3">
+                                    <i class="bi bi-gear text-white"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">系统更新</h6>
+                                    <p class="small text-muted mb-0">系统成功更新到v1.0.2版本</p>
+                                    <small class="text-muted">昨天 11:30</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="bi bi-lightning-charge me-2"></i>快速操作
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <a href="data_collection.html" class="btn btn-outline-primary w-100 py-3">
+                                    <i class="bi bi-cloud-download mb-2 d-block" style="font-size: 1.5rem;"></i>
+                                    采集数据
+                                </a>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <a href="advanced_selection.html" class="btn btn-outline-success w-100 py-3">
+                                    <i class="bi bi-search mb-2 d-block" style="font-size: 1.5rem;"></i>
+                                    筛选产品
+                                </a>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <a href="profit_calculator.html" class="btn btn-outline-warning w-100 py-3">
+                                    <i class="bi bi-calculator mb-2 d-block" style="font-size: 1.5rem;"></i>
+                                    计算利润
+                                </a>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <a href="temu_integration.html" class="btn btn-outline-danger w-100 py-3">
+                                    <i class="bi bi-upload mb-2 d-block" style="font-size: 1.5rem;"></i>
+                                    上传产品
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>亚马逊-Temu跨境选品分析系统</h5>
+                    <p class="small">一个专业的跨境电商选品分析工具，帮助您从亚马逊平台选出最适合在Temu销售的产品。</p>
+                </div>
+                <div class="col-md-3">
+                    <h6>快速链接</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white-50">控制中心</a></li>
+                        <li><a href="data_collection.html" class="text-white-50">数据采集</a></li>
+                        <li><a href="advanced_selection.html" class="text-white-50">智能选品</a></li>
+                        <li><a href="visualization.html" class="text-white-50">数据可视化</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>系统信息</h6>
+                    <ul class="list-unstyled">
+                        <li class="text-white-50">版本：v1.0</li>
+                        <li class="text-white-50">更新日期：2023-05-15</li>
+                        <li class="text-white-50">仅供个人使用</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="mt-4 bg-secondary">
+            <div class="text-center">
+                <p class="small text-white-50 mb-0">© 2023 亚马逊-Temu跨境选品分析系统 | 个人使用工具</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 销售趋势图表
+        const salesTrendCtx = document.getElementById('salesTrendChart').getContext('2d');
+        const salesTrendChart = new Chart(salesTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                datasets: [{
+                    label: '亚马逊产品销量',
+                    data: [65, 59, 80, 81, 56, 55, 40, 45, 60, 70, 85, 90],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }, {
+                    label: 'Temu产品销量',
+                    data: [28, 48, 40, 19, 86, 27, 90, 85, 72, 68, 75, 82],
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 类目分布图表
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+        const categoryChart = new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['家居', '电子', '服装', '厨具', '玩具', '其他'],
+                datasets: [{
+                    data: [35, 25, 20, 10, 5, 5],
+                    backgroundColor: [
+                        '#3498db',
+                        '#2ecc71',
+                        '#f39c12',
+                        '#e74c3c',
+                        '#9b59b6',
+                        '#1abc9c'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 数字计数动画
+    const counters = document.querySelectorAll('.counter');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.textContent, 10);
+        const duration = 1500; // 动画持续时间（毫秒）
+        const frameDuration = 1000 / 60; // 60fps
+        const totalFrames = Math.round(duration / frameDuration);
+        
+        let frame = 0;
+        let currentValue = 0;
+        
+        function updateCounter() {
+            frame++;
+            const progress = frame / totalFrames;
+            currentValue = Math.round(progress * target);
+            
+            if (currentValue !== parseInt(counter.textContent, 10)) {
+                counter.textContent = currentValue;
+            }
+            
+            if (frame < totalFrames) {
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.textContent = target;
+            }
+        }
+        
+        // 开始动画
+        requestAnimationFrame(updateCounter);
+    });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亚马逊-Temu跨境选品分析结果</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/utils/api.js" defer></script>
+    <script src="../js/analysis.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>亚马逊-Temu跨境选品分析结果</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">首页</a></li>
+                <li><a href="data_collection.html">数据采集</a></li>
+                <li><a href="analysis_results.html" class="active">分析结果</a></li>
+                <li><a href="platform_comparison.html">多平台对比</a></li>
+                <li><a href="category_monitor.html">类目监控</a></li>
+                <li><a href="price_analysis.html">价格分析</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- 分析概述面板 -->
+        <section class="analysis-overview">
+            <h2>分析结果概述</h2>
+            <div class="overview-stats">
+                <div class="stat-card">
+                    <h3>待分析产品</h3>
+                    <div class="stat-value" id="total-products">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>推荐上架</h3>
+                    <div class="stat-value" id="recommended-products">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>高风险产品</h3>
+                    <div class="stat-value" id="high-risk-products">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>高利润产品</h3>
+                    <div class="stat-value" id="high-profit-products">0</div>
+                </div>
+            </div>
+
+            <div class="analysis-filters">
+                <div class="filter-group">
+                    <label for="platform-filter">平台:</label>
+                    <select id="platform-filter">
+                        <option value="all">全部平台</option>
+                        <option value="amazon">亚马逊</option>
+                        <option value="temu">Temu</option>
+                        <option value="shein">Shein</option>
+                        <option value="aliexpress">速卖通</option>
+                        <option value="wish">Wish</option>
+                        <option value="shopee">虾皮</option>
+                        <option value="walmart">沃尔玛</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="category-filter">类目:</label>
+                    <select id="category-filter">
+                        <option value="all">全部类目</option>
+                        <!-- 动态加载类目 -->
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sort-by">排序方式:</label>
+                    <select id="sort-by">
+                        <option value="score-desc">选品指数 (高到低)</option>
+                        <option value="profit-desc">预估利润 (高到低)</option>
+                        <option value="sales-desc">销量趋势 (高到低)</option>
+                        <option value="risk-asc">风险系数 (低到高)</option>
+                        <option value="date-desc">分析时间 (最新)</option>
+                        <option value="roi-desc">投资回报率 (高到低)</option>
+                    </select>
+                </div>
+                <div class="filter-group search">
+                    <input type="text" id="search-products" placeholder="搜索产品...">
+                    <button id="search-btn"><i class="search-icon"></i></button>
+                </div>
+            </div>
+            
+            <!-- 新增高级筛选 -->
+            <div class="advanced-filters">
+                <button id="toggle-advanced-filters" class="btn secondary">高级筛选选项 <span class="toggle-icon">▼</span></button>
+                <div class="advanced-filters-panel" style="display: none;">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="price-min">价格区间:</label>
+                            <div class="range-filter">
+                                <input type="number" id="price-min" placeholder="最低" min="0">
+                                <span>-</span>
+                                <input type="number" id="price-max" placeholder="最高" min="0">
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label for="profit-min">利润率区间:</label>
+                            <div class="range-filter">
+                                <input type="number" id="profit-min" placeholder="最低" min="0" max="100">
+                                <span>-</span>
+                                <input type="number" id="profit-max" placeholder="最高" min="0" max="100">
+                                <span>%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="risk-max">最大风险系数:</label>
+                            <input type="range" id="risk-max" min="0" max="100" value="100">
+                            <span id="risk-max-value">100</span>
+                        </div>
+                        <div class="filter-group">
+                            <label for="score-min">最低选品指数:</label>
+                            <input type="range" id="score-min" min="0" max="100" value="0">
+                            <span id="score-min-value">0</span>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>推荐级别:</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" name="recommendation" value="strong" checked> 强烈推荐</label>
+                                <label><input type="checkbox" name="recommendation" value="recommend" checked> 建议上架</label>
+                                <label><input type="checkbox" name="recommendation" value="neutral" checked> 谨慎考虑</label>
+                                <label><input type="checkbox" name="recommendation" value="not-recommended" checked> 不建议上架</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="reset-filters" class="btn secondary">重置筛选</button>
+                        <button id="apply-filters" class="btn primary">应用筛选</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 产品分析列表 -->
+        <section class="product-analysis-list">
+            <h2>产品分析列表</h2>
+            
+            <!-- 视图切换 -->
+            <div class="view-options">
+                <button class="view-btn active" data-view="list"><i class="list-icon"></i> 列表视图</button>
+                <button class="view-btn" data-view="grid"><i class="grid-icon"></i> 网格视图</button>
+                <span class="results-count">共 <span id="filtered-count">0</span> 个结果</span>
+            </div>
+            
+            <div class="products-grid list-view" id="analysis-results-container">
+                <!-- 产品分析卡片将通过JavaScript动态生成 -->
+            </div>
+
+            <div class="pagination">
+                <button id="prev-page" class="btn secondary" disabled>上一页</button>
+                <span id="page-info">页码: <span id="current-page">1</span> / <span id="total-pages">1</span></span>
+                <button id="next-page" class="btn secondary" disabled>下一页</button>
+            </div>
+        </section>
+
+        <!-- 批量操作 -->
+        <section class="batch-actions">
+            <h2>批量操作</h2>
+            <div class="action-buttons">
+                <button id="export-selected" class="btn primary" disabled>导出选中产品</button>
+                <button id="analyze-selected" class="btn primary" disabled>深度分析选中产品</button>
+                <button id="compare-selected" class="btn secondary" disabled>对比选中产品</button>
+                <button id="delete-selected" class="btn warning" disabled>删除选中产品</button>
+            </div>
+        </section>
+
+        <!-- 产品详细分析弹窗 -->
+        <div class="modal" id="product-detail-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>产品详细分析</h2>
+                    <span class="close-btn">&times;</span>
+                </div>
+                <div class="modal-body" id="product-detail-content">
+                    <!-- 产品详细分析内容将通过JavaScript动态生成 -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn secondary" id="close-modal">关闭</button>
+                    <button class="btn primary" id="save-analysis">保存分析</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 亚马逊-Temu跨境选品分析系统 | 个人使用</p>
+    </footer>
+
+    <!-- 产品分析卡片模板 (用于JavaScript克隆) -->
+    <template id="product-analysis-card-template">
+        <div class="product-analysis-card">
+            <div class="card-checkbox">
+                <input type="checkbox" class="product-select">
+            </div>
+            <div class="product-image">
+                <img src="" alt="产品图片">
+                <span class="platform-badge"></span>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title"></h3>
+                <div class="product-meta">
+                    <span class="product-price"></span>
+                    <span class="product-rating"></span>
+                    <span class="product-reviews"></span>
+                </div>
+                <div class="analysis-indicators">
+                    <div class="indicator">
+                        <span class="indicator-label">选品指数</span>
+                        <div class="indicator-bar">
+                            <div class="indicator-fill"></div>
+                        </div>
+                        <span class="indicator-value"></span>
+                    </div>
+                    <div class="indicator">
+                        <span class="indicator-label">利润率</span>
+                        <div class="indicator-bar">
+                            <div class="indicator-fill"></div>
+                        </div>
+                        <span class="indicator-value"></span>
+                    </div>
+                    <div class="indicator">
+                        <span class="indicator-label">风险系数</span>
+                        <div class="indicator-bar">
+                            <div class="indicator-fill"></div>
+                        </div>
+                        <span class="indicator-value"></span>
+                    </div>
+                </div>
+                <div class="recommendation">
+                    <span class="recommendation-label">建议:</span>
+                    <span class="recommendation-value"></span>
+                </div>
+            </div>
+            <div class="card-actions">
+                <button class="btn small view-details">查看详情</button>
+                <button class="btn small secondary add-to-list">加入选品</button>
+            </div>
+        </div>
+    </template>
+</body>
+</html> 

@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+
+{% block page_title %}筛选数据：{{ file_path }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>设置筛选条件</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ url_for('filter_data', file_path=file_path) }}">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="min_rating" class="form-label">最低评分</label>
+                            <input type="number" class="form-control" id="min_rating" name="min_rating" 
+                                   step="0.1" min="0" max="5" placeholder="例如：4.3">
+                            <div class="form-text">只保留高于此评分的产品</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="min_discount" class="form-label">最低折扣率 (%)</label>
+                            <input type="number" class="form-control" id="min_discount" name="min_discount" 
+                                   step="5" min="0" max="100" placeholder="例如：40">
+                            <div class="form-text">只保留折扣率高于此值的产品</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="min_price" class="form-label">最低价格 ($)</label>
+                            <input type="number" class="form-control" id="min_price" name="min_price" 
+                                   step="0.01" min="0" placeholder="例如：5.99">
+                            <div class="form-text">只保留价格高于此值的产品</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="max_price" class="form-label">最高价格 ($)</label>
+                            <input type="number" class="form-control" id="max_price" name="max_price" 
+                                   step="0.01" min="0" placeholder="例如：29.99">
+                            <div class="form-text">只保留价格低于此值的产品</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="keyword" class="form-label">关键词筛选</label>
+                        <input type="text" class="form-control" id="keyword" name="keyword" 
+                               placeholder="输入要包含的关键词">
+                        <div class="form-text">只保留标题或描述中包含此关键词的产品</div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="no_risk" name="no_risk" checked>
+                        <label class="form-check-label" for="no_risk">排除高风险产品</label>
+                        <div class="form-text">排除可能包含高风险关键词或属于禁止类目的产品</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel"></i> 应用筛选
+                        </button>
+                        <a href="{{ url_for('view_file', file_path=file_path) }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> 返回查看
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>预设筛选方案</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <button type="button" class="list-group-item list-group-item-action" onclick="applyPreset('temu_recommended')">
+                        <strong>Temu推荐产品</strong>
+                        <small class="d-block text-muted">评分≥4.3，价格5-30美元，无风险</small>
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action" onclick="applyPreset('trending')">
+                        <strong>热门趋势产品</strong>
+                        <small class="d-block text-muted">Movers & Shakers中的飙升产品</small>
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action" onclick="applyPreset('high_margin')">
+                        <strong>高利润潜力产品</strong>
+                        <small class="d-block text-muted">折扣≥50%，价格10-25美元</small>
+                    </button>
+                    <button type="button" class="list-group-item list-group-item-action" onclick="applyPreset('bestsellers')">
+                        <strong>顶级畅销产品</strong>
+                        <small class="d-block text-muted">Best Sellers中评分≥4.5的产品</small>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5>筛选建议</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <p><strong>效果最佳的筛选组合：</strong></p>
+                    <ul>
+                        <li>评分 ≥ 4.3</li>
+                        <li>价格 $5.99 - $29.99</li>
+                        <li>排除高风险产品</li>
+                    </ul>
+                    <p>这些条件可以过滤出最适合Temu平台的产品。</p>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <p><strong>注意：</strong>过于严格的筛选条件可能会大幅减少结果数量。建议逐步调整筛选条件以获得最佳结果。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 预设筛选方案
+function applyPreset(preset) {
+    // 清除所有输入
+    document.getElementById('min_rating').value = '';
+    document.getElementById('min_price').value = '';
+    document.getElementById('max_price').value = '';
+    document.getElementById('min_discount').value = '';
+    document.getElementById('keyword').value = '';
+    document.getElementById('no_risk').checked = true;
+    
+    // 应用预设
+    switch(preset) {
+        case 'temu_recommended':
+            document.getElementById('min_rating').value = '4.3';
+            document.getElementById('min_price').value = '5';
+            document.getElementById('max_price').value = '30';
+            document.getElementById('no_risk').checked = true;
+            break;
+        case 'trending':
+            document.getElementById('keyword').value = 'movers';
+            document.getElementById('min_rating').value = '4.0';
+            break;
+        case 'high_margin':
+            document.getElementById('min_discount').value = '50';
+            document.getElementById('min_price').value = '10';
+            document.getElementById('max_price').value = '25';
+            break;
+        case 'bestsellers':
+            document.getElementById('min_rating').value = '4.5';
+            document.getElementById('keyword').value = 'best sellers';
+            break;
+    }
+}
+</script>
+{% endblock %} 

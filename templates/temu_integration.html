@@ -1,0 +1,434 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}Temu平台集成 - 亚马逊-Temu跨境选品分析系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Temu账号管理 -->
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-shop me-2"></i>Temu账户管理</h5>
+                    <button class="btn btn-sm btn-light">
+                        <i class="bi bi-plus-circle me-2"></i>添加账户
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for account in accounts %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card {% if account.status == '已连接' %}border-success{% else %}border-secondary{% endif %}">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="card-title mb-0">{{ account.name }}</h6>
+                                    <span class="badge {% if account.status == '已连接' %}bg-success{% else %}bg-secondary{% endif %}">{{ account.status }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted mb-2">
+                                    <span>ID: {{ account.id }}</span>
+                                    {% if account.status == '已连接' %}
+                                    <span>活跃</span>
+                                    {% else %}
+                                    <span>未连接</span>
+                                    {% endif %}
+                                </div>
+                                <div class="btn-group w-100">
+                                    {% if account.status == '已连接' %}
+                                    <button class="btn btn-sm btn-outline-success">
+                                        <i class="bi bi-gear me-2"></i>设置
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-power me-2"></i>断开
+                                    </button>
+                                    {% else %}
+                                    <button class="btn btn-sm btn-success">
+                                        <i class="bi bi-link me-2"></i>连接
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>
+                                        <i class="bi bi-gear me-2"></i>设置
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 待上传产品列表 -->
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-card-checklist me-2"></i>待上传产品列表</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" id="select-all-btn">
+                            <i class="bi bi-check-all me-2"></i>全选
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" id="clear-all-btn">
+                            <i class="bi bi-trash me-2"></i>清空列表
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 40px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="select-all-checkbox">
+                                    </div>
+                                </th>
+                                <th style="width: 60px;">图片</th>
+                                <th>商品信息</th>
+                                <th style="width: 100px;">价格</th>
+                                <th style="width: 100px;">利润率</th>
+                                <th style="width: 120px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if products %}
+                                {% for product in products %}
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input product-checkbox" type="checkbox" value="{{ product.id }}" name="products">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <img src="{{ product.image }}" alt="{{ product.title }}" class="img-thumbnail" style="max-width: 50px;">
+                                    </td>
+                                    <td>
+                                        <h6 class="mb-1">{{ product.title }}</h6>
+                                        <span class="badge bg-light text-dark">{{ product.category }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold">${{ product.price }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ product.profit_margin }}%</span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="tooltip" title="编辑商品">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="tooltip" title="从列表移除">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="bi bi-inbox display-4 text-muted"></i>
+                                        <p class="mt-2">暂无待上传产品</p>
+                                        <a href="{{ url_for('advanced_selection') }}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-search me-2"></i>开始选品
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if products %}
+            <div class="card-footer bg-light">
+                <form id="upload-form" method="POST">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-label">选择上传账户</label>
+                                <select class="form-select" name="account">
+                                    {% for account in accounts %}
+                                        {% if account.status == '已连接' %}
+                                        <option value="{{ account.id }}">{{ account.name }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-8 text-end">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-cloud-upload me-2"></i>上传至Temu
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- 上传统计和设置 -->
+    <div class="col-md-4">
+        <!-- 上传统计卡片 -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>上传统计</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="border rounded py-3">
+                            <h3 class="mb-0 text-primary">36</h3>
+                            <small class="text-muted">今日上传</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="border rounded py-3">
+                            <h3 class="mb-0 text-success">286</h3>
+                            <small class="text-muted">本月上传</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="border rounded py-3">
+                            <h3 class="mb-0 text-warning">18</h3>
+                            <small class="text-muted">待审核</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="border rounded py-3">
+                            <h3 class="mb-0 text-danger">4</h3>
+                            <small class="text-muted">审核拒绝</small>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h6 class="mb-3">上传成功率</h6>
+                <div class="progress mb-2" style="height: 10px;">
+                    <div class="progress-bar bg-success" style="width: 92%"></div>
+                </div>
+                <div class="d-flex justify-content-between small">
+                    <span>总上传：310</span>
+                    <span>审核通过：286 (92%)</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 上传设置卡片 -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>上传设置</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">定价策略</label>
+                        <select class="form-select">
+                            <option>亚马逊价格 × 1.5</option>
+                            <option>亚马逊价格 × 1.7</option>
+                            <option>亚马逊价格 × 2.0</option>
+                            <option selected>自定义利润率 (30%)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">产品分类匹配</label>
+                        <select class="form-select">
+                            <option>自动匹配Temu分类</option>
+                            <option selected>使用亚马逊原分类</option>
+                            <option>手动指定分类</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">产品描述处理</label>
+                        <select class="form-select">
+                            <option>使用原始描述</option>
+                            <option selected>AI优化描述</option>
+                            <option>手动编辑描述</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="auto-upload" checked>
+                        <label class="form-check-label" for="auto-upload">选品后自动添加到上传列表</label>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="risk-filter" checked>
+                        <label class="form-check-label" for="risk-filter">自动过滤高风险产品</label>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>保存设置
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 上传进度模态框 -->
+<div class="modal fade" id="upload-progress-modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">上传进度</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6 class="text-center mb-3">正在上传商品到Temu平台</h6>
+                <div class="progress mb-4" style="height: 20px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="upload-progress-bar" style="width: 25%">25%</div>
+                </div>
+                
+                <div class="upload-status">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>已上传</span>
+                        <span id="uploaded-count">3/12</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>成功</span>
+                        <span id="success-count">3</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>失败</span>
+                        <span id="failed-count">0</span>
+                    </div>
+                </div>
+                
+                <div class="current-item mt-4">
+                    <h6>当前上传：</h6>
+                    <div class="d-flex align-items-center border rounded p-2">
+                        <img src="https://via.placeholder.com/50" id="current-product-image" class="me-3">
+                        <div>
+                            <h6 id="current-product-title">测试产品 4</h6>
+                            <div class="small text-muted">ID: ASIN003</div>
+                        </div>
+                        <div class="ms-auto">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">后台上传</button>
+                <button type="button" class="btn btn-danger" id="cancel-upload-btn">取消上传</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 全选/取消全选
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const productCheckboxes = document.querySelectorAll('.product-checkbox');
+        
+        selectAllCheckbox.addEventListener('change', function() {
+            productCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        });
+        
+        // 全选按钮
+        const selectAllBtn = document.getElementById('select-all-btn');
+        selectAllBtn.addEventListener('click', function() {
+            selectAllCheckbox.checked = true;
+            productCheckboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        });
+        
+        // 清空列表按钮
+        const clearAllBtn = document.getElementById('clear-all-btn');
+        clearAllBtn.addEventListener('click', function() {
+            if (confirm('确定要清空整个上传列表吗？')) {
+                // 在实际应用中，这里应该发送请求到服务器清空列表
+                alert('列表已清空');
+                location.reload();
+            }
+        });
+        
+        // 上传表单提交
+        const uploadForm = document.getElementById('upload-form');
+        if (uploadForm) {
+            uploadForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 检查是否选择了产品
+                const selectedProducts = document.querySelectorAll('.product-checkbox:checked');
+                if (selectedProducts.length === 0) {
+                    alert('请至少选择一个产品');
+                    return;
+                }
+                
+                // 显示上传进度模态框
+                const uploadProgressModal = new bootstrap.Modal(document.getElementById('upload-progress-modal'));
+                uploadProgressModal.show();
+                
+                // 模拟上传进度
+                let progress = 0;
+                const progressBar = document.getElementById('upload-progress-bar');
+                const uploadedCount = document.getElementById('uploaded-count');
+                const successCount = document.getElementById('success-count');
+                const failedCount = document.getElementById('failed-count');
+                const totalCount = selectedProducts.length;
+                
+                // 更新初始值
+                uploadedCount.textContent = `0/${totalCount}`;
+                successCount.textContent = '0';
+                failedCount.textContent = '0';
+                
+                // 模拟上传过程
+                const uploadInterval = setInterval(function() {
+                    if (progress >= 100) {
+                        clearInterval(uploadInterval);
+                        // 上传完成后的操作
+                        setTimeout(function() {
+                            alert('上传完成!');
+                            uploadProgressModal.hide();
+                            location.reload();
+                        }, 1000);
+                        return;
+                    }
+                    
+                    progress += (100 / totalCount);
+                    if (progress > 100) progress = 100;
+                    
+                    progressBar.style.width = progress + '%';
+                    progressBar.textContent = Math.round(progress) + '%';
+                    
+                    const currentUploaded = Math.ceil(progress / (100 / totalCount));
+                    uploadedCount.textContent = `${currentUploaded}/${totalCount}`;
+                    successCount.textContent = currentUploaded;
+                    
+                    // 更新当前上传产品信息
+                    // 这里应该根据实际情况更新
+                    
+                }, 1000);
+                
+                // 取消上传按钮
+                document.getElementById('cancel-upload-btn').addEventListener('click', function() {
+                    clearInterval(uploadInterval);
+                    alert('上传已取消');
+                    uploadProgressModal.hide();
+                });
+            });
+        }
+        
+        // 初始化工具提示
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
+{% endblock %} 

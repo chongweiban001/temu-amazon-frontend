@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block page_title %}亚马逊-Temu跨境选品分析系统{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/temu_custom.css') }}" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    {% block styles %}{% endblock %}
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+        }
+        
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 48px);
+            padding-top: .5rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        .navbar-brand {
+            padding-top: .75rem;
+            padding-bottom: .75rem;
+            font-size: 1rem;
+            background-color: rgba(0, 0, 0, .25);
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            padding: 20px;
+        }
+        
+        .product-card {
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .product-image {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+        }
+        
+        .flash-messages {
+            margin-top: 20px;
+        }
+        
+        .upload-form {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+        }
+        
+        /* 响应式设计增强 */
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: static;
+                height: auto;
+                padding-top: 0;
+            }
+            
+            .sidebar-sticky {
+                height: auto;
+                overflow: visible;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .table-responsive {
+                font-size: 0.9rem;
+            }
+            
+            .card-title {
+                font-size: 1.25rem;
+            }
+            
+            .display-4 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-box-seam me-2"></i>亚马逊-Temu选品系统
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i class="bi bi-house-door me-1"></i>首页
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-cloud-download me-1"></i>数据管理
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('crawl') }}">数据采集</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">导入/导出</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-search me-1"></i>选品分析
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('advanced_selection') }}">智能选品</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('visualization') }}">数据可视化</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('compare') }}">产品比较</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('platform_comparison') }}">多平台对比</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profit_calculator') }}">
+                            <i class="bi bi-calculator me-1"></i>利润计算
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('temu_integration') }}">
+                            <i class="bi bi-upload me-1"></i>上传至Temu
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <button id="theme-toggle" class="btn btn-outline-light me-2" title="切换主题">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>用户
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">账户设置</a></li>
+                            <li><a class="dropdown-item" href="#">系统配置</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">退出</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 内容区域 -->
+    <div class="content-wrapper">
+        <!-- 闪现消息 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mt-3">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <!-- 页面内容 -->
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer mt-5 py-4 bg-dark text-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="mb-2">亚马逊-Temu跨境选品分析系统</h6>
+                    <p class="text-muted small mb-0">提供多维度数据分析、智能选品和Temu上传功能</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted small mb-0">&copy; 2023-2025 版权所有</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/temu_image_fix.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pagination.js') }}"></script>
+    
+    <script>
+    // 主题切换逻辑
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                const isDark = document.body.classList.contains('dark-theme');
+                localStorage.setItem('dark-theme', isDark ? 'true' : 'false');
+                themeToggle.innerHTML = isDark ? 
+                    '<i class="bi bi-sun"></i>' : 
+                    '<i class="bi bi-moon"></i>';
+            });
+            
+            // 加载主题偏好
+            const isDark = localStorage.getItem('dark-theme') === 'true';
+            if (isDark) {
+                document.body.classList.add('dark-theme');
+                themeToggle.innerHTML = '<i class="bi bi-sun"></i>';
+            }
+        }
+        
+        // 标记当前页面导航
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.navbar .nav-link').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+                // 如果是在下拉菜单中，也要激活父菜单
+                const dropdown = link.closest('.dropdown');
+                if (dropdown) {
+                    dropdown.querySelector('.dropdown-toggle').classList.add('active');
+                }
+            }
+        });
+    });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

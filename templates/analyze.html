@@ -1,0 +1,239 @@
+{% extends "layout.html" %}
+
+{% block page_title %}数据分析：{{ file_path }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <div class="d-flex justify-content-between">
+            <div>
+                <p>共计分析 {{ report.总产品数 }} 个产品</p>
+            </div>
+            <div class="btn-group">
+                <a href="{{ url_for('view_file', file_path=file_path) }}" class="btn btn-primary">
+                    <i class="bi bi-eye"></i> 查看产品详情
+                </a>
+                <a href="{{ url_for('filter_data', file_path=file_path) }}" class="btn btn-warning">
+                    <i class="bi bi-funnel"></i> 筛选数据
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> 返回
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>频道分布</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if "频道分布" in charts %}
+                        <img src="{{ url_for('static', filename=charts['频道分布'].replace('static/', '')) }}" class="img-fluid" alt="频道分布图表">
+                        {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>频道</th>
+                                        <th>产品数</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for channel, count in report.频道统计.items() %}
+                                    <tr>
+                                        <td>{{ channel }}</td>
+                                        <td>{{ count }}</td>
+                                        <td>{{ (count / report.总产品数 * 100)|round(1) }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>类目分布</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>类目</th>
+                                        <th>产品数</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for category, count in report.类目统计.items() %}
+                                    <tr>
+                                        <td>{{ category }}</td>
+                                        <td>{{ count }}</td>
+                                        <td>{{ (count / report.总产品数 * 100)|round(1) }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>评分分布</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if "评分分布" in charts %}
+                        <img src="{{ url_for('static', filename=charts['评分分布'].replace('static/', '')) }}" class="img-fluid" alt="评分分布图表">
+                        {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>评分范围</th>
+                                        <th>产品数</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for rating, count in report.评分分布.items() %}
+                                    <tr>
+                                        <td>{{ rating }}</td>
+                                        <td>{{ count }}</td>
+                                        <td>{{ (count / report.总产品数 * 100)|round(1) }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>价格区间</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if "价格区间" in charts %}
+                        <img src="{{ url_for('static', filename=charts['价格区间'].replace('static/', '')) }}" class="img-fluid" alt="价格区间图表">
+                        {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>价格范围</th>
+                                        <th>产品数</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for price, count in report.价格区间.items() %}
+                                    <tr>
+                                        <td>{{ price }}</td>
+                                        <td>{{ count }}</td>
+                                        <td>{{ (count / report.总产品数 * 100)|round(1) }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>潜在风险分布</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>风险等级</th>
+                                        <th>产品数</th>
+                                        <th>占比</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for risk, count in report.潜在风险.items() %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-{% if risk == 'low' %}success{% elif risk == 'medium' %}warning{% elif risk == 'high' %}danger{% else %}secondary{% endif %}">
+                                                {{ risk }}
+                                            </span>
+                                        </td>
+                                        <td>{{ count }}</td>
+                                        <td>{{ (count / report.总产品数 * 100)|round(1) }}%</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>选品建议</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <h6>综合分析结果</h6>
+                            <ul>
+                                {% if report.评分分布 and '4.5-5.0' in report.评分分布 %}
+                                <li>高评分产品（4.5-5.0星）占比 {{ (report.评分分布['4.5-5.0'] / report.总产品数 * 100)|round(1) }}%</li>
+                                {% endif %}
+                                
+                                {% if report.价格区间 and '10-25' in report.价格区间 %}
+                                <li>理想价格区间（10-25美元）产品占比 {{ (report.价格区间['10-25'] / report.总产品数 * 100)|round(1) }}%</li>
+                                {% endif %}
+                                
+                                {% if report.潜在风险 and 'low' in report.潜在风险 %}
+                                <li>低风险产品占比 {{ (report.潜在风险['low'] / report.总产品数 * 100)|round(1) }}%</li>
+                                {% endif %}
+                            </ul>
+                            
+                            <h6>Temu平台选品建议</h6>
+                            <p>
+                                根据数据分析，建议优先选择以下类型产品：
+                            </p>
+                            <ol>
+                                <li>高评分（≥4.5星）且价格在10-25美元之间的产品</li>
+                                <li>Movers & Shakers频道中排名上升超过150%的产品</li>
+                                <li>Outlet频道中折扣率超过50%的轻量级产品</li>
+                                <li>低风险评级且无资质要求的产品</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('filter_data', file_path=file_path) }}" class="btn btn-warning">
+                                <i class="bi bi-funnel"></i> 按建议条件筛选
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

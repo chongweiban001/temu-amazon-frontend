@@ -1,0 +1,303 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}比较结果 - 亚马逊-Temu跨境选品分析系统{% endblock page_title %}
+
+{% block content %}
+<section class="compare-results-section">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-bar-chart-line me-2"></i>产品比较结果</h5>
+                <a href="{{ url_for('compare') }}" class="btn btn-sm btn-light">
+                    <i class="bi bi-arrow-left me-1"></i>返回选择页面
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered comparison-table mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="min-width: 120px;">比较项</th>
+                            {% for product in products %}
+                            <th>{{ product.title }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>图片</td>
+                            {% for product in products %}
+                            <td class="text-center">
+                                <img src="{{ product.image }}" alt="{{ product.title }}" class="img-fluid product-image" style="max-height: 100px;">
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>类别</td>
+                            {% for product in products %}
+                            <td>
+                                <span class="badge bg-secondary">{{ product.category }}</span>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="table-danger bg-opacity-25">
+                            <td>Amazon价格</td>
+                            {% for product in products %}
+                            <td class="fw-bold">${{ product.amazon_price }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="table-primary bg-opacity-25">
+                            <td>Temu价格</td>
+                            {% for product in products %}
+                            <td class="fw-bold">${{ product.temu_price }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>价格差异</td>
+                            {% for product in products %}
+                            <td>
+                                {% set price_diff = product.amazon_price - product.temu_price %}
+                                {% if price_diff > 0 %}
+                                <span class="text-danger">${{ price_diff|round(2) }} (Amazon高)</span>
+                                {% elif price_diff < 0 %}
+                                <span class="text-success">${{ (-price_diff)|round(2) }} (Temu高)</span>
+                                {% else %}
+                                <span class="text-muted">相同</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="table-danger bg-opacity-25">
+                            <td>Amazon评分</td>
+                            {% for product in products %}
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ product.amazon_rating }}</span>
+                                    <div class="ratings">
+                                        {% set full_stars = product.amazon_rating|int %}
+                                        {% set half_star = (product.amazon_rating - full_stars) >= 0.5 %}
+                                        
+                                        {% for i in range(full_stars) %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        {% endfor %}
+                                        
+                                        {% if half_star %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                        {% set remaining_stars = 4 - full_stars %}
+                                        {% else %}
+                                        {% set remaining_stars = 5 - full_stars %}
+                                        {% endif %}
+                                        
+                                        {% for i in range(remaining_stars) %}
+                                        <i class="bi bi-star text-warning"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="table-primary bg-opacity-25">
+                            <td>Temu评分</td>
+                            {% for product in products %}
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">{{ product.temu_rating }}</span>
+                                    <div class="ratings">
+                                        {% set full_stars = product.temu_rating|int %}
+                                        {% set half_star = (product.temu_rating - full_stars) >= 0.5 %}
+                                        
+                                        {% for i in range(full_stars) %}
+                                        <i class="bi bi-star-fill text-warning"></i>
+                                        {% endfor %}
+                                        
+                                        {% if half_star %}
+                                        <i class="bi bi-star-half text-warning"></i>
+                                        {% set remaining_stars = 4 - full_stars %}
+                                        {% else %}
+                                        {% set remaining_stars = 5 - full_stars %}
+                                        {% endif %}
+                                        
+                                        {% for i in range(remaining_stars) %}
+                                        <i class="bi bi-star text-warning"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="table-danger bg-opacity-25">
+                            <td>Amazon评论数</td>
+                            {% for product in products %}
+                            <td>{{ product.amazon_reviews }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr class="table-primary bg-opacity-25">
+                            <td>Temu评论数</td>
+                            {% for product in products %}
+                            <td>{{ product.temu_reviews }}</td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td>综合推荐</td>
+                            {% for product in products %}
+                            <td>
+                                {% if product.amazon_price < product.temu_price and product.amazon_rating >= product.temu_rating %}
+                                <span class="badge bg-danger px-3 py-2">推荐购买Amazon</span>
+                                {% elif product.temu_price < product.amazon_price and product.temu_rating >= product.amazon_rating %}
+                                <span class="badge bg-primary px-3 py-2">推荐购买Temu</span>
+                                {% else %}
+                                <span class="badge bg-secondary px-3 py-2">需进一步分析</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>价格与评分对比</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <canvas id="priceComparisonChart"></canvas>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <canvas id="ratingComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 创建产品数据数组
+        var productsData = [
+            {% for product in products %}
+            {
+                title: "{{ product.title }}",
+                amazonPrice: {{ product.amazon_price }},
+                temuPrice: {{ product.temu_price }},
+                amazonRating: {{ product.amazon_rating }},
+                temuRating: {{ product.temu_rating }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+        
+        // 创建价格对比图表
+        createPriceComparisonChart(productsData);
+        
+        // 创建评分对比图表
+        createRatingComparisonChart(productsData);
+    });
+    
+    function createPriceComparisonChart(products) {
+        const ctx = document.getElementById('priceComparisonChart').getContext('2d');
+        
+        const labels = products.map(p => p.title);
+        const amazonData = products.map(p => p.amazonPrice);
+        const temuData = products.map(p => p.temuPrice);
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Amazon价格',
+                        data: amazonData,
+                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                        borderColor: 'rgb(220, 53, 69)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Temu价格',
+                        data: temuData,
+                        backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                        borderColor: 'rgb(13, 110, 253)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '价格对比 ($)'
+                    },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    function createRatingComparisonChart(products) {
+        const ctx = document.getElementById('ratingComparisonChart').getContext('2d');
+        
+        const labels = products.map(p => p.title);
+        const amazonData = products.map(p => p.amazonRating);
+        const temuData = products.map(p => p.temuRating);
+        
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Amazon评分',
+                        data: amazonData,
+                        backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                        borderColor: 'rgb(220, 53, 69)',
+                        pointBackgroundColor: 'rgb(220, 53, 69)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(220, 53, 69)'
+                    },
+                    {
+                        label: 'Temu评分',
+                        data: temuData,
+                        backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                        borderColor: 'rgb(13, 110, 253)',
+                        pointBackgroundColor: 'rgb(13, 110, 253)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(13, 110, 253)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '评分对比'
+                    }
+                },
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 5,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock scripts %} 

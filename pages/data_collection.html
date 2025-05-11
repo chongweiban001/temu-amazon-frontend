@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亚马逊-Temu跨境选品数据采集</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/utils/api.js" defer></script>
+    <script src="../js/main.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>亚马逊-Temu跨境选品数据采集</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">首页</a></li>
+                <li><a href="data_collection.html" class="active">数据采集</a></li>
+                <li><a href="selection_results.html">分析结果</a></li>
+                <li><a href="#">多平台对比</a></li>
+                <li><a href="#">类目监控</a></li>
+                <li><a href="#">价格分析</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="platform-selection">
+            <h2>选择平台</h2>
+            <div class="platform-tabs">
+                <button class="platform-tab active" data-platform="amazon">亚马逊</button>
+                <button class="platform-tab" data-platform="temu">Temu</button>
+                <button class="platform-tab" data-platform="both">双平台对比</button>
+            </div>
+        </section>
+
+        <section class="collection-control">
+            <h2>采集控制</h2>
+            <div class="control-panel">
+                <div class="control-group">
+                    <h3>采集范围设置</h3>
+                    <div class="form-group">
+                        <label for="category">商品类目:</label>
+                        <select id="category" name="category">
+                            <option value="all">所有类目</option>
+                            <option value="electronics">电子产品</option>
+                            <option value="home">家居用品</option>
+                            <option value="kitchen">厨房用品</option>
+                            <option value="fashion">服装鞋包</option>
+                            <option value="beauty">美妆个护</option>
+                            <option value="toys">玩具</option>
+                            <option value="sports">运动户外</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subcategory">子类目:</label>
+                        <select id="subcategory" name="subcategory">
+                            <option value="all">所有子类目</option>
+                            <!-- 动态加载子类目 -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="depth">采集深度:</label>
+                        <select id="depth" name="depth">
+                            <option value="1">1页 (~20个产品)</option>
+                            <option value="3">3页 (~60个产品)</option>
+                            <option value="5" selected>5页 (~100个产品)</option>
+                            <option value="10">10页 (~200个产品)</option>
+                            <option value="20">20页 (~400个产品)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>筛选条件</h3>
+                    <div class="form-group">
+                        <label for="min-price">最低价格:</label>
+                        <input type="number" id="min-price" name="min-price" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-price">最高价格:</label>
+                        <input type="number" id="max-price" name="max-price" value="999">
+                    </div>
+                    <div class="form-group">
+                        <label for="min-rating">最低评分:</label>
+                        <input type="number" id="min-rating" name="min-rating" min="1" max="5" step="0.1" value="4.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="min-reviews">最少评论数:</label>
+                        <input type="number" id="min-reviews" name="min-reviews" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-age">上架时间:</label>
+                        <select id="max-age" name="max-age">
+                            <option value="0">不限</option>
+                            <option value="30">30天内</option>
+                            <option value="90" selected>90天内</option>
+                            <option value="180">180天内</option>
+                            <option value="365">1年内</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>高级选项</h3>
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="include-variations" name="include-variations" checked>
+                        <label for="include-variations">包含变体产品</label>
+                    </div>
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="include-sponsored" name="include-sponsored">
+                        <label for="include-sponsored">包含广告产品</label>
+                    </div>
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="include-bestsellers" name="include-bestsellers" checked>
+                        <label for="include-bestsellers">只看畅销产品</label>
+                    </div>
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="include-prime" name="include-prime">
+                        <label for="include-prime">只看Prime/快递产品</label>
+                    </div>
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="save-images" name="save-images" checked>
+                        <label for="save-images">保存产品图片</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="start-collection" class="btn primary">开始采集</button>
+                <button id="stop-collection" class="btn secondary" disabled>停止采集</button>
+                <button id="clear-results" class="btn secondary">清空结果</button>
+            </div>
+        </section>
+
+        <section class="collection-progress hidden">
+            <h2>采集进度</h2>
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span id="progress-status">准备中...</span>
+                    <span id="progress-percentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div class="collection-stats">
+                    <div class="stat">
+                        <span class="stat-label">已采集页数:</span>
+                        <span id="pages-collected">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">已采集产品:</span>
+                        <span id="products-collected">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">符合条件产品:</span>
+                        <span id="qualified-products">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">预计剩余时间:</span>
+                        <span id="time-remaining">--:--</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="collection-results hidden">
+            <h2>采集结果预览 <span id="result-count">(0)</span></h2>
+            <div class="results-filter">
+                <div class="search-box">
+                    <input type="text" id="search-results" placeholder="搜索产品...">
+                    <button id="search-btn"><i class="search-icon"></i></button>
+                </div>
+                <div class="sort-options">
+                    <label for="sort-by">排序:</label>
+                    <select id="sort-by">
+                        <option value="relevance">相关度</option>
+                        <option value="price-asc">价格 (低到高)</option>
+                        <option value="price-desc">价格 (高到低)</option>
+                        <option value="rating">评分</option>
+                        <option value="reviews">评论数</option>
+                        <option value="date">上架时间</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="results-grid" id="results-container">
+                <!-- 结果将通过JavaScript动态加载 -->
+            </div>
+            
+            <div class="results-actions">
+                <button id="export-results" class="btn primary">导出结果</button>
+                <button id="analyze-results" class="btn primary">分析结果</button>
+                <button id="save-to-selection" class="btn secondary">保存到选品列表</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 亚马逊-Temu跨境选品分析系统 | 个人使用</p>
+    </footer>
+</body>
+</html> 

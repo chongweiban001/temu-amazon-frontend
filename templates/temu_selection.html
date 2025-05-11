@@ -1,0 +1,558 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Temu选品分析{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 fade-in">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Temu选品分析仪表盘</h4>
+                    <div>
+                        <button class="btn btn-sm btn-info refresh-data"><i class="bi bi-arrow-clockwise"></i> 刷新数据</button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-md-3 col-sm-6 p-3 border-end">
+                            <div class="text-center p-3 bg-success text-white rounded shadow-sm">
+                                <h1 class="display-4">{{ stats.safe_count if stats else 0 }}</h1>
+                                <p class="lead mb-0">可安全上架</p>
+                                <small>符合Temu平台要求的产品</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 p-3 border-end">
+                            <div class="text-center p-3 bg-warning text-white rounded shadow-sm">
+                                <h1 class="display-4">{{ stats.review_count if stats else 0 }}</h1>
+                                <p class="lead mb-0">需要审核</p>
+                                <small>需要人工确认的产品</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 p-3 border-end">
+                            <div class="text-center p-3 bg-danger text-white rounded shadow-sm">
+                                <h1 class="display-4">{{ stats.banned_count if stats else 0 }}</h1>
+                                <p class="lead mb-0">被禁止</p>
+                                <small>违反平台规则的产品</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 p-3">
+                            <div class="text-center p-3 bg-info text-white rounded shadow-sm">
+                                <h1 class="display-4">{{ '%.1f'|format(stats.avg_score) if stats and stats.avg_score else '0.0' }}</h1>
+                                <p class="lead mb-0">平均评分</p>
+                                <small>所有产品的平均分</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 筛选部分 -->
+        <div class="col-md-3 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-funnel"></i> 筛选器</h5>
+                </div>
+                <div class="card-body">
+                    <form id="filter-form">
+                        <div class="mb-3">
+                            <label class="form-label">状态</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="status-safe" value="safe" checked>
+                                    <label class="form-check-label" for="status-safe">安全</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="status-review" value="review" checked>
+                                    <label class="form-check-label" for="status-review">审核</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="status-banned" value="banned">
+                                    <label class="form-check-label" for="status-banned">禁止</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="min-score" class="form-label">最低评分 <span id="min-score-value">4.0</span></label>
+                            <input type="range" class="form-range" id="min-score" min="1" max="5" step="0.1" value="4.0">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="max-price" class="form-label">最高价格 $<span id="max-price-value">50</span></label>
+                            <input type="range" class="form-range" id="max-price" min="1" max="100" value="50">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="min-discount" class="form-label">最低折扣 <span id="min-discount-value">20</span>%</label>
+                            <input type="range" class="form-range" id="min-discount" min="0" max="90" value="20">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="max-weight" class="form-label">最大重量 <span id="max-weight-value">1</span> 磅</label>
+                            <input type="range" class="form-range" id="max-weight" min="0.1" max="5" step="0.1" value="1">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category-select" class="form-label">类目</label>
+                            <select class="form-select" id="category-select">
+                                <option value="all" selected>全部类目</option>
+                                <option value="electronics">电子产品</option>
+                                <option value="fashion">服装</option>
+                                <option value="home">家居</option>
+                                <option value="beauty">美妆</option>
+                                <option value="toys">玩具</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="light-weight-only" checked>
+                                <label class="form-check-label" for="light-weight-only">仅轻量级商品</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="high-margin">
+                                <label class="form-check-label" for="high-margin">高利润潜力</label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="button" id="apply-filter" class="btn btn-primary"><i class="bi bi-search"></i> 应用筛选</button>
+                            <button type="reset" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i> 重置</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 产品列表部分 -->
+        <div class="col-md-9 mb-4">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-grid-3x3-gap"></i> 产品列表</h5>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary view-mode" data-mode="grid"><i class="bi bi-grid"></i></button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary active view-mode" data-mode="list"><i class="bi bi-list"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive product-list-container">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>图片</th>
+                                    <th>产品名称</th>
+                                    <th>价格</th>
+                                    <th>评分</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-list">
+                                {% for product in products %}
+                                <tr class="product-item" data-category="{{ product.category }}" data-status="{{ product.status }}" data-price="{{ product.price }}" data-score="{{ product.rating }}">
+                                    <td>
+                                        <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-image" width="60">
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">{{ product.title }}</div>
+                                        <small class="text-muted">{{ product.category }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">${{ product.price }}</div>
+                                        <small class="text-success">折扣: {{ product.discount }}%</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">{{ product.rating }}</span>
+                                            <div class="text-warning">
+                                                {% for i in range(5) %}
+                                                    {% if i < product.rating|int %}
+                                                    <i class="bi bi-star-fill"></i>
+                                                    {% elif i < product.rating %}
+                                                    <i class="bi bi-star-half"></i>
+                                                    {% else %}
+                                                    <i class="bi bi-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ product.reviews }} 评论</small>
+                                    </td>
+                                    <td>
+                                        {% if product.status == 'safe' %}
+                                        <span class="badge bg-success">安全上架</span>
+                                        {% elif product.status == 'review' %}
+                                        <span class="badge bg-warning">需审核</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">被禁止</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-info view-product" data-id="{{ product.id }}"><i class="bi bi-eye"></i></button>
+                                            <button class="btn btn-sm btn-primary export-product" data-id="{{ product.id }}"><i class="bi bi-download"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 添加分页控件 -->
+                    <div id="pagination" class="mt-4"></div>
+                    
+                    <!-- 添加每页显示数量选择器 -->
+                    <div class="text-center mt-3">
+                        <div class="btn-group" role="group" aria-label="每页显示数量">
+                            <button type="button" class="btn btn-outline-secondary btn-sm items-per-page" data-count="10">10条/页</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm items-per-page" data-count="20">20条/页</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm items-per-page" data-count="50">50条/页</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 产品详情模态框 -->
+<div class="modal fade" id="product-modal" tabindex="-1" aria-labelledby="product-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="product-modal-label">产品详情</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-5">
+                        <img src="" alt="Product" class="img-fluid rounded mb-3" id="modal-product-image">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <span class="fw-bold">价格: </span>
+                                <span id="modal-product-price"></span>
+                            </div>
+                            <div>
+                                <span class="fw-bold">评分: </span>
+                                <span id="modal-product-score"></span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <span class="fw-bold">重量: </span>
+                                <span id="modal-product-weight"></span>
+                            </div>
+                            <div>
+                                <span class="fw-bold">折扣: </span>
+                                <span id="modal-product-discount"></span>
+                            </div>
+                        </div>
+                        <div id="modal-product-status"></div>
+                    </div>
+                    <div class="col-md-7">
+                        <h4 id="modal-product-name"></h4>
+                        <p class="text-muted" id="modal-product-category"></p>
+                        <div class="mb-3">
+                            <h6>产品描述</h6>
+                            <p id="modal-product-description"></p>
+                        </div>
+                        <div class="mb-3">
+                            <h6>关键特性</h6>
+                            <ul id="modal-product-features"></ul>
+                        </div>
+                        <div class="mb-3">
+                            <h6>风险分析</h6>
+                            <p id="modal-product-risk"></p>
+                        </div>
+                        <div>
+                            <h6>建议零售价</h6>
+                            <p id="modal-product-suggested-price"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="modal-export-btn"><i class="bi bi-download"></i> 导出数据</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 额外的Javascript -->
+<script src="{{ url_for('static', filename='js/temu_image_fix.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pagination.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 范围滑块更新显示值
+    document.getElementById('min-score').addEventListener('input', function() {
+        document.getElementById('min-score-value').textContent = this.value;
+    });
+    
+    document.getElementById('max-price').addEventListener('input', function() {
+        document.getElementById('max-price-value').textContent = this.value;
+    });
+    
+    document.getElementById('min-discount').addEventListener('input', function() {
+        document.getElementById('min-discount-value').textContent = this.value;
+    });
+    
+    document.getElementById('max-weight').addEventListener('input', function() {
+        document.getElementById('max-weight-value').textContent = this.value;
+    });
+    
+    // 视图切换
+    document.querySelectorAll('.view-mode').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.view-mode').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const mode = this.dataset.mode;
+            const container = document.querySelector('.product-list-container');
+            
+            if (mode === 'grid') {
+                container.classList.add('grid-view');
+                container.classList.remove('list-view');
+            } else {
+                container.classList.add('list-view');
+                container.classList.remove('grid-view');
+            }
+        });
+    });
+    
+    // 筛选功能
+    document.getElementById('apply-filter').addEventListener('click', function() {
+        applyFilters();
+    });
+    
+    // 每页显示数量切换
+    setupItemsPerPage();
+    
+    // 产品详情模态框
+    document.querySelectorAll('.view-product').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            // 模拟加载产品数据
+            const product = {
+                id: productId,
+                title: '示例产品 #' + productId,
+                image_url: 'https://via.placeholder.com/300',
+                price: '$19.99',
+                original_price: '$39.99',
+                rating: 4.5,
+                weight: '0.75 磅',
+                discount: '50%',
+                category: '电子产品',
+                description: '这是一个高质量的产品，专为Temu平台设计。轻巧便携，适合国际物流运输。',
+                features: [
+                    '高质量材料',
+                    '耐用设计',
+                    '简易安装',
+                    '多种颜色可选',
+                    '兼容多种设备'
+                ],
+                risk: '此产品不在FDA监管范围内，无CE认证要求，不是儿童产品，可以安全上架。',
+                suggested_price: '$29.99 (利润率约33%)',
+                status: 'safe'
+            };
+            
+            // 填充模态框数据
+            document.getElementById('modal-product-name').textContent = product.title;
+            document.getElementById('modal-product-image').src = product.image_url;
+            document.getElementById('modal-product-image').alt = product.title;
+            document.getElementById('modal-product-price').textContent = `${product.price} (原价: ${product.original_price})`;
+            document.getElementById('modal-product-score').textContent = product.rating;
+            document.getElementById('modal-product-weight').textContent = product.weight;
+            document.getElementById('modal-product-discount').textContent = product.discount;
+            document.getElementById('modal-product-category').textContent = product.category;
+            document.getElementById('modal-product-description').textContent = product.description;
+            document.getElementById('modal-product-risk').textContent = product.risk;
+            document.getElementById('modal-product-suggested-price').textContent = product.suggested_price;
+            
+            // 清空并填充特性列表
+            const featuresList = document.getElementById('modal-product-features');
+            featuresList.innerHTML = '';
+            product.features.forEach(feature => {
+                const li = document.createElement('li');
+                li.textContent = feature;
+                featuresList.appendChild(li);
+            });
+            
+            // 设置状态标签
+            const statusEl = document.getElementById('modal-product-status');
+            if (product.status === 'safe') {
+                statusEl.innerHTML = '<span class="badge bg-success">安全上架</span>';
+            } else if (product.status === 'review') {
+                statusEl.innerHTML = '<span class="badge bg-warning">需审核</span>';
+            } else {
+                statusEl.innerHTML = '<span class="badge bg-danger">被禁止</span>';
+            }
+            
+            // 设置导出按钮的数据ID
+            document.getElementById('modal-export-btn').dataset.id = productId;
+            
+            // 显示模态框
+            const modal = new bootstrap.Modal(document.getElementById('product-modal'));
+            modal.show();
+        });
+    });
+    
+    // 导出功能
+    document.querySelectorAll('.export-product, #modal-export-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            alert(`产品 #${productId} 的数据将被导出！`);
+        });
+    });
+    
+    // 动画效果
+    document.querySelectorAll('.fade-in').forEach(el => {
+        el.classList.add('fade-in-active');
+    });
+    
+    // 设置筛选功能
+    function setupFiltering() {
+        // 获取筛选器元素
+        const minScoreRange = document.getElementById('min-score');
+        const minScoreValue = document.getElementById('min-score-value');
+        const maxPriceRange = document.getElementById('max-price');
+        const maxPriceValue = document.getElementById('max-price-value');
+        const minDiscountRange = document.getElementById('min-discount');
+        const minDiscountValue = document.getElementById('min-discount-value');
+        const maxWeightRange = document.getElementById('max-weight');
+        const maxWeightValue = document.getElementById('max-weight-value');
+        const categorySelect = document.getElementById('category-select');
+        const lightWeightOnly = document.getElementById('light-weight-only');
+        const highMargin = document.getElementById('high-margin');
+        const applyFilterBtn = document.getElementById('apply-filter');
+        const statusCheckboxes = document.querySelectorAll('input[type="checkbox"][id^="status-"]');
+        
+        // 更新滑块值显示
+        if (minScoreRange) {
+            minScoreRange.addEventListener('input', function() {
+                minScoreValue.textContent = this.value;
+            });
+        }
+        
+        if (maxPriceRange) {
+            maxPriceRange.addEventListener('input', function() {
+                maxPriceValue.textContent = this.value;
+            });
+        }
+        
+        if (minDiscountRange) {
+            minDiscountRange.addEventListener('input', function() {
+                minDiscountValue.textContent = this.value;
+            });
+        }
+        
+        if (maxWeightRange) {
+            maxWeightRange.addEventListener('input', function() {
+                maxWeightValue.textContent = this.value;
+            });
+        }
+        
+        // 应用筛选按钮点击事件
+        if (applyFilterBtn) {
+            applyFilterBtn.addEventListener('click', function() {
+                applyFilters();
+            });
+        }
+        
+        // 应用筛选函数
+        function applyFilters() {
+            const minScore = parseFloat(minScoreRange ? minScoreRange.value : 0);
+            const maxPrice = parseFloat(maxPriceRange ? maxPriceRange.value : 100);
+            const minDiscount = parseInt(minDiscountRange ? minDiscountRange.value : 0);
+            const maxWeight = parseFloat(maxWeightRange ? maxWeightRange.value : 5);
+            const category = categorySelect ? categorySelect.value : 'all';
+            const isLightWeight = lightWeightOnly ? lightWeightOnly.checked : false;
+            const isHighMargin = highMargin ? highMargin.checked : false;
+            
+            // 获取选中的状态
+            const selectedStatuses = [];
+            statusCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedStatuses.push(checkbox.value);
+                }
+            });
+            
+            // 获取所有产品项
+            const productItems = document.querySelectorAll('.product-item');
+            let visibleCount = 0;
+            
+            // 遍历产品并应用筛选
+            productItems.forEach(item => {
+                const productPrice = parseFloat(item.getAttribute('data-price') || 0);
+                const productScore = parseFloat(item.getAttribute('data-score') || 0);
+                const productCategory = item.getAttribute('data-category') || '';
+                const productStatus = item.getAttribute('data-status') || '';
+                
+                // 应用筛选条件
+                let isVisible = true;
+                
+                // 评分筛选
+                if (productScore < minScore) isVisible = false;
+                
+                // 价格筛选
+                if (productPrice > maxPrice) isVisible = false;
+                
+                // 类别筛选
+                if (category !== 'all' && productCategory !== category) isVisible = false;
+                
+                // 状态筛选
+                if (selectedStatuses.length > 0 && !selectedStatuses.includes(productStatus)) isVisible = false;
+                
+                // 设置可见性
+                if (isVisible) {
+                    item.classList.remove('d-none');
+                    visibleCount++;
+                } else {
+                    item.classList.add('d-none');
+                }
+            });
+            
+            // 更新分页
+            if (window.productPagination) {
+                window.productPagination.updateTotalItems(visibleCount);
+            }
+        }
+    }
+    
+    // 设置每页显示数量
+    function setupItemsPerPage() {
+        const itemsPerPageButtons = document.querySelectorAll('.items-per-page');
+        
+        itemsPerPageButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const count = parseInt(this.getAttribute('data-count'));
+                
+                // 移除所有按钮的活动状态
+                itemsPerPageButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // 添加当前按钮的活动状态
+                this.classList.add('active');
+                
+                // 更新分页
+                if (window.productPagination) {
+                    window.productPagination.updateItemsPerPage(count);
+                }
+            });
+        });
+        
+        // 默认选中第一个
+        if (itemsPerPageButtons.length > 0) {
+            itemsPerPageButtons[0].classList.add('active');
+        }
+    }
+});
+</script>
+{% endblock %}

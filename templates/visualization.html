@@ -1,0 +1,538 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}数据可视化 - 亚马逊-Temu跨境选品分析系统{% endblock %}
+
+{% block content %}
+<section class="container py-4">
+    <div class="dashboard-heading">
+        <h2><i class="bi bi-bar-chart-line me-2"></i>数据可视化分析</h2>
+        <p>直观展示亚马逊和Temu平台的产品数据对比和市场趋势</p>
+    </div>
+    
+    <!-- 平台对比图表 -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>平台价格对比</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="priceComparisonChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>评分分布对比</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="ratingDistributionChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 类别分析 -->
+    <div class="dashboard-heading">
+        <h2><i class="bi bi-diagram-3 me-2"></i>类别分析</h2>
+        <p>不同类别产品在各平台的表现对比</p>
+    </div>
+    
+    <div class="row g-4 mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart-steps me-2"></i>类别销量对比</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categorySalesChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>亚马逊类别分布</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="amazonCategoryChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Temu类别分布</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="temuCategoryChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 时间趋势 -->
+    <div class="dashboard-heading">
+        <h2><i class="bi bi-graph-up me-2"></i>时间趋势</h2>
+        <p>产品价格和销量的时间变化趋势</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow me-2"></i>价格趋势</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="priceTrendChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow me-2"></i>销量趋势</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="salesTrendChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 模拟数据（实际应用中应从后端获取）
+    const mockData = {
+        // 类别数据
+        categories: ['电子产品', '家居用品', '服装', '玩具', '厨房用品', '美妆个护', '运动户外'],
+        
+        // 价格数据
+        priceData: {
+            amazon: [59.99, 45.99, 29.99, 19.99, 34.99, 24.99, 49.99],
+            temu: [29.99, 22.99, 15.99, 9.99, 17.99, 12.99, 25.99]
+        },
+        
+        // 评分分布
+        ratingDistribution: {
+            amazon: [5, 15, 25, 35, 20],
+            temu: [10, 20, 30, 25, 15]
+        },
+        
+        // 类别销量
+        categorySales: {
+            amazon: [1200, 950, 800, 1100, 750, 650, 900],
+            temu: [1500, 1100, 950, 1300, 900, 800, 1050]
+        },
+        
+        // 亚马逊类别分布
+        amazonCategoryDistribution: [25, 20, 15, 10, 15, 8, 7],
+        
+        // Temu类别分布
+        temuCategoryDistribution: [20, 18, 22, 12, 13, 8, 7],
+        
+        // 时间数据
+        timeLabels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+        
+        // 价格趋势
+        priceTrend: {
+            amazon: [62.99, 61.99, 59.99, 59.99, 57.99, 59.99, 58.99, 56.99, 54.99, 52.99, 54.99, 59.99],
+            temu: [32.99, 31.99, 30.99, 29.99, 28.99, 29.99, 29.99, 28.99, 26.99, 25.99, 27.99, 29.99]
+        },
+        
+        // 销量趋势
+        salesTrend: {
+            amazon: [800, 850, 900, 1000, 1100, 1050, 950, 900, 1200, 1300, 1400, 1500],
+            temu: [1000, 1050, 1100, 1200, 1300, 1250, 1150, 1100, 1400, 1500, 1600, 1700]
+        }
+    };
+    
+    // 图表配置
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+            }
+        }
+    };
+    
+    // 创建价格对比图表
+    createPriceComparisonChart(mockData);
+    
+    // 创建评分分布图表
+    createRatingDistributionChart(mockData);
+    
+    // 创建类别销量图表
+    createCategorySalesChart(mockData);
+    
+    // 创建亚马逊类别分布图表
+    createAmazonCategoryChart(mockData);
+    
+    // 创建Temu类别分布图表
+    createTemuCategoryChart(mockData);
+    
+    // 创建价格趋势图表
+    createPriceTrendChart(mockData);
+    
+    // 创建销量趋势图表
+    createSalesTrendChart(mockData);
+});
+
+// 创建价格对比图表
+function createPriceComparisonChart(data) {
+    const ctx = document.getElementById('priceComparisonChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.categories,
+            datasets: [
+                {
+                    label: '亚马逊价格 ($)',
+                    data: data.priceData.amazon,
+                    backgroundColor: 'rgba(255, 153, 0, 0.7)',
+                    borderColor: 'rgba(255, 153, 0, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Temu价格 ($)',
+                    data: data.priceData.temu,
+                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '平台价格对比 (美元)'
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// 创建评分分布图表
+function createRatingDistributionChart(data) {
+    const ctx = document.getElementById('ratingDistributionChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['1星', '2星', '3星', '4星', '5星'],
+            datasets: [
+                {
+                    label: '亚马逊评分分布 (%)',
+                    data: data.ratingDistribution.amazon,
+                    fill: true,
+                    backgroundColor: 'rgba(255, 153, 0, 0.2)',
+                    borderColor: 'rgba(255, 153, 0, 1)',
+                    pointBackgroundColor: 'rgba(255, 153, 0, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 153, 0, 1)'
+                },
+                {
+                    label: 'Temu评分分布 (%)',
+                    data: data.ratingDistribution.temu,
+                    fill: true,
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(239, 68, 68, 1)'
+                }
+            ]
+        },
+        options: {
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }
+        }
+    });
+}
+
+// 创建类别销量图表
+function createCategorySalesChart(data) {
+    const ctx = document.getElementById('categorySalesChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.categories,
+            datasets: [
+                {
+                    label: '亚马逊销量',
+                    data: data.categorySales.amazon,
+                    backgroundColor: 'rgba(255, 153, 0, 0.7)',
+                    borderColor: 'rgba(255, 153, 0, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Temu销量',
+                    data: data.categorySales.temu,
+                    backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '类别销量对比'
+                },
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// 创建亚马逊类别分布图表
+function createAmazonCategoryChart(data) {
+    const ctx = document.getElementById('amazonCategoryChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: data.categories,
+            datasets: [
+                {
+                    data: data.amazonCategoryDistribution,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(199, 199, 199, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(199, 199, 199, 1)'
+                    ],
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                title: {
+                    display: true,
+                    text: '亚马逊类别分布 (%)'
+                }
+            }
+        }
+    });
+}
+
+// 创建Temu类别分布图表
+function createTemuCategoryChart(data) {
+    const ctx = document.getElementById('temuCategoryChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: data.categories,
+            datasets: [
+                {
+                    data: data.temuCategoryDistribution,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(199, 199, 199, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(199, 199, 199, 1)'
+                    ],
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                },
+                title: {
+                    display: true,
+                    text: 'Temu类别分布 (%)'
+                }
+            }
+        }
+    });
+}
+
+// 创建价格趋势图表
+function createPriceTrendChart(data) {
+    const ctx = document.getElementById('priceTrendChart').getContext('2d');
+    
+    // 创建渐变背景
+    const amazonGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    amazonGradient.addColorStop(0, 'rgba(255, 153, 0, 0.1)');
+    amazonGradient.addColorStop(1, 'rgba(255, 153, 0, 0)');
+    
+    const temuGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    temuGradient.addColorStop(0, 'rgba(239, 68, 68, 0.1)');
+    temuGradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.timeLabels,
+            datasets: [
+                {
+                    label: '亚马逊价格 ($)',
+                    data: data.priceTrend.amazon,
+                    fill: true,
+                    backgroundColor: amazonGradient,
+                    borderColor: 'rgba(255, 153, 0, 1)',
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(255, 153, 0, 1)'
+                },
+                {
+                    label: 'Temu价格 ($)',
+                    data: data.priceTrend.temu,
+                    fill: true,
+                    backgroundColor: temuGradient,
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(239, 68, 68, 1)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '价格趋势 (美元)'
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// 创建销量趋势图表
+function createSalesTrendChart(data) {
+    const ctx = document.getElementById('salesTrendChart').getContext('2d');
+    
+    // 创建渐变背景
+    const amazonGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    amazonGradient.addColorStop(0, 'rgba(255, 153, 0, 0.1)');
+    amazonGradient.addColorStop(1, 'rgba(255, 153, 0, 0)');
+    
+    const temuGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    temuGradient.addColorStop(0, 'rgba(239, 68, 68, 0.1)');
+    temuGradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.timeLabels,
+            datasets: [
+                {
+                    label: '亚马逊销量',
+                    data: data.salesTrend.amazon,
+                    fill: true,
+                    backgroundColor: amazonGradient,
+                    borderColor: 'rgba(255, 153, 0, 1)',
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(255, 153, 0, 1)'
+                },
+                {
+                    label: 'Temu销量',
+                    data: data.salesTrend.temu,
+                    fill: true,
+                    backgroundColor: temuGradient,
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(239, 68, 68, 1)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: '销量趋势'
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %} 

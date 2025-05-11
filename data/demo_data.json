@@ -1,0 +1,218 @@
+[
+  {
+    "asin": "B09B3XFMQ9",
+    "title": "便携式蓝牙音箱，防水IPX7，15小时播放时间",
+    "url": "https://www.amazon.com/dp/B09B3XFMQ9",
+    "image_url": "https://m.media-amazon.com/images/I/71K6mZ4wf1L._AC_SY300_.jpg",
+    "price": 25.99,
+    "rating": 4.7,
+    "review_count": 3265,
+    "rank": 1,
+    "category_id": "172282",
+    "data_source": "best_sellers",
+    "source_details": {
+      "channel": "best_sellers",
+      "category": "electronics",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/Best-Sellers-Electronics/zgbs/electronics"
+    },
+    "weight_lbs": 0.65,
+    "safety_status": "safe"
+  },
+  {
+    "asin": "B08XMTG23H",
+    "title": "小型LED台灯，触控调光，USB充电",
+    "url": "https://www.amazon.com/dp/B08XMTG23H",
+    "image_url": "https://m.media-amazon.com/images/I/61+WL1z9qNL._AC_SY300_.jpg",
+    "price": 16.99,
+    "rating": 4.5,
+    "review_count": 4219,
+    "rank": 2,
+    "category_id": "1063306",
+    "data_source": "best_sellers",
+    "source_details": {
+      "channel": "best_sellers",
+      "category": "home-garden",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/Best-Sellers-Home-Kitchen/zgbs/home-garden"
+    },
+    "weight_lbs": 0.4,
+    "safety_status": "safe"
+  },
+  {
+    "asin": "B092V38HX5",
+    "title": "宠物猫自动喂食器，定时控制，语音录制",
+    "url": "https://www.amazon.com/dp/B092V38HX5",
+    "image_url": "https://m.media-amazon.com/images/I/71nH2eSZUJL._AC_SY300_.jpg",
+    "price": 39.99,
+    "rating": 4.3,
+    "review_count": 2458,
+    "rank": 3,
+    "category_id": "2975312011",
+    "data_source": "best_sellers",
+    "source_details": {
+      "channel": "best_sellers",
+      "category": "pet-supplies",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/Best-Sellers-Pet-Supplies/zgbs/pet-supplies"
+    },
+    "weight_lbs": 0.9,
+    "safety_status": "safe"
+  },
+  {
+    "asin": "B09LCDM2NF",
+    "title": "不锈钢厨房刀具5件套，带刀座",
+    "url": "https://www.amazon.com/dp/B09LCDM2NF",
+    "image_url": "https://m.media-amazon.com/images/I/719xpASKLAL._AC_SY300_.jpg",
+    "price": 24.99,
+    "original_price": 49.99,
+    "discount_percentage": 50.0,
+    "rating": 4.4,
+    "review_count": 1832,
+    "rank": 15,
+    "category_id": "284507",
+    "data_source": "outlet",
+    "source_details": {
+      "channel": "outlet",
+      "category": "kitchen",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/outlet/kitchen"
+    },
+    "weight_lbs": 0.85,
+    "safety_status": "safe"
+  },
+  {
+    "asin": "B08QV4MC35",
+    "title": "手机支架，多角度可调，适用于桌面",
+    "url": "https://www.amazon.com/dp/B08QV4MC35",
+    "image_url": "https://m.media-amazon.com/images/I/61XJmEKy72L._AC_SY300_.jpg",
+    "price": 9.99,
+    "rating": 4.6,
+    "review_count": 7825,
+    "rank": 8,
+    "rank_change": "+256%",
+    "category_id": "2407755011",
+    "data_source": "movers_shakers",
+    "source_details": {
+      "channel": "movers_shakers",
+      "category": "electronics",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/gp/movers-and-shakers/electronics"
+    },
+    "weight_lbs": 0.15,
+    "safety_status": "safe"
+  },
+  {
+    "asin": "B086X1YDNJ",
+    "title": "无线充电器，Qi认证，10W快充",
+    "url": "https://www.amazon.com/dp/B086X1YDNJ",
+    "image_url": "https://m.media-amazon.com/images/I/61TPDT4V8YL._AC_SY300_.jpg",
+    "price": 13.99,
+    "original_price": 29.99,
+    "discount_percentage": 53.35,
+    "rating": 4.3,
+    "review_count": 3698,
+    "rank": 21,
+    "rank_change": "+125%",
+    "category_id": "2407755011",
+    "data_source": "movers_shakers",
+    "source_details": {
+      "channel": "movers_shakers",
+      "category": "electronics",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/gp/movers-and-shakers/electronics"
+    },
+    "weight_lbs": 0.25,
+    "safety_status": "safe"
+  },
+  {
+    "asin": "B09XH5G655",
+    "title": "笔记本电脑，翻新，14英寸，8GB RAM，256GB SSD",
+    "url": "https://www.amazon.com/dp/B09XH5G655",
+    "image_url": "https://m.media-amazon.com/images/I/81nUzRCMkPL._AC_SY300_.jpg",
+    "price": 289.99,
+    "original_price": 399.99,
+    "discount_percentage": 27.5,
+    "rating": 4.1,
+    "review_count": 423,
+    "category_id": "565108",
+    "data_source": "warehouse",
+    "source_details": {
+      "channel": "warehouse",
+      "category": "electronics",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/Warehouse-Deals/b?node=10158976011"
+    },
+    "item_condition": "Renewed",
+    "weight_lbs": 3.5,
+    "potential_risk": "medium",
+    "risk_reason": "翻新商品，可能有功能缺陷",
+    "safety_status": "review"
+  },
+  {
+    "asin": "B08SWK1GPY",
+    "title": "儿童牙刷，软毛，适合2-5岁儿童",
+    "url": "https://www.amazon.com/dp/B08SWK1GPY",
+    "image_url": "https://m.media-amazon.com/images/I/71a5AxW+VYL._AC_SY300_.jpg",
+    "price": 8.99,
+    "rating": 4.7,
+    "review_count": 984,
+    "rank": 37,
+    "category_id": "3760931",
+    "data_source": "best_sellers",
+    "source_details": {
+      "channel": "best_sellers",
+      "category": "baby",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/Best-Sellers-Baby/zgbs/baby-products"
+    },
+    "weight_lbs": 0.1,
+    "potential_risk": "high",
+    "risk_reason": "儿童类产品，需要特殊认证",
+    "safety_status": "banned"
+  },
+  {
+    "asin": "B09DG3L4S6",
+    "title": "血压计，FDA认证，语音播报",
+    "url": "https://www.amazon.com/dp/B09DG3L4S6",
+    "image_url": "https://m.media-amazon.com/images/I/61EJ+wzkSQL._AC_SY300_.jpg",
+    "price": 29.99,
+    "rating": 4.4,
+    "review_count": 2156,
+    "rank": 5,
+    "category_id": "3760911",
+    "data_source": "best_sellers",
+    "source_details": {
+      "channel": "best_sellers",
+      "category": "health-household",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/Best-Sellers-Health-Household/zgbs/hpc"
+    },
+    "weight_lbs": 0.6,
+    "potential_risk": "high",
+    "risk_reason": "医疗设备，需要FDA认证",
+    "safety_status": "banned"
+  },
+  {
+    "asin": "B09FSMVR5M",
+    "title": "可调节手机支架，桌面通用支架",
+    "url": "https://www.amazon.com/dp/B09FSMVR5M",
+    "image_url": "https://m.media-amazon.com/images/I/71zytzrHAzL._AC_SY300_.jpg",
+    "price": 6.99,
+    "original_price": 12.99,
+    "discount_percentage": 46.2,
+    "rating": 4.5,
+    "review_count": 3542,
+    "rank": 18,
+    "category_id": "2407755011",
+    "data_source": "outlet",
+    "source_details": {
+      "channel": "outlet",
+      "category": "electronics",
+      "timestamp": "2023-06-15T12:30:45",
+      "source_url": "https://www.amazon.com/outlet/electronics"
+    },
+    "weight_lbs": 0.2,
+    "safety_status": "safe"
+  }
+] 

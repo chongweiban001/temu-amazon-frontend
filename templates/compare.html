@@ -1,0 +1,100 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}产品比较 - 亚马逊-Temu跨境选品分析系统{% endblock page_title %}
+
+{% block content %}
+<section class="compare-section">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-bar-chart-line me-2"></i>产品比较功能</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('compare_products') }}" method="post">
+                <h3 class="mb-3">选择要比较的产品</h3>
+                <p class="text-muted mb-4">请选择2-4个产品进行比较</p>
+                
+                <div class="row product-selection">
+                    {% for product in products %}
+                    <div class="col-md-4 col-lg-3 mb-4">
+                        <div class="card h-100 product-item">
+                            <label class="product-checkbox h-100 mb-0">
+                                <input type="checkbox" name="product_ids" value="{{ product.id }}" class="compare-checkbox">
+                                <div class="card-body product-info">
+                                    <div class="text-center mb-3">
+                                        <img src="{{ product.image }}" alt="{{ product.title }}" class="img-fluid product-image" style="max-height: 150px;">
+                                    </div>
+                                    <h6 class="card-title">{{ product.title }}</h6>
+                                    <p class="card-text small">类别: {{ product.category }}</p>
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <span class="badge bg-danger">Amazon: ${{ product.amazon_price }}</span>
+                                        <span class="badge bg-primary">Temu: ${{ product.temu_price }}</span>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="d-flex align-items-center mt-4">
+                    <button type="submit" id="compare-button" class="btn btn-primary" disabled>
+                        <i class="bi bi-arrow-left-right me-2"></i>比较选中的产品
+                    </button>
+                    <span id="selection-message" class="ms-3 text-muted">请选择2-4个产品</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.compare-checkbox');
+        const compareButton = document.getElementById('compare-button');
+        const selectionMessage = document.getElementById('selection-message');
+        
+        // 监听复选框变化
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateCompareButton);
+        });
+        
+        function updateCompareButton() {
+            const checkedCount = document.querySelectorAll('.compare-checkbox:checked').length;
+            
+            if (checkedCount >= 2 && checkedCount <= 4) {
+                compareButton.disabled = false;
+                selectionMessage.textContent = `已选择 ${checkedCount} 个产品`;
+                selectionMessage.classList.remove('text-danger');
+                selectionMessage.classList.add('text-success');
+            } else {
+                compareButton.disabled = true;
+                selectionMessage.classList.remove('text-success');
+                
+                if (checkedCount > 4) {
+                    selectionMessage.textContent = '最多只能选择4个产品';
+                    selectionMessage.classList.add('text-danger');
+                } else {
+                    selectionMessage.textContent = '请选择2-4个产品';
+                    selectionMessage.classList.remove('text-danger');
+                }
+            }
+        }
+        
+        // 样式：选中时的卡片效果
+        document.querySelectorAll('.product-checkbox').forEach(label => {
+            const checkbox = label.querySelector('input[type="checkbox"]');
+            const card = label.closest('.card');
+            
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    card.classList.add('border-primary');
+                    card.classList.add('shadow');
+                } else {
+                    card.classList.remove('border-primary');
+                    card.classList.remove('shadow');
+                }
+            });
+        });
+    });
+</script>
+{% endblock content %} 

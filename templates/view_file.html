@@ -1,0 +1,134 @@
+{% extends "layout.html" %}
+
+{% block page_title %}查看文件：{{ file_path }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <div class="d-flex justify-content-between">
+            <div>
+                <p>显示 {{ showing }} 个产品（共 {{ total_count }} 个）</p>
+            </div>
+            <div class="btn-group">
+                <a href="{{ url_for('analyze', file_path=file_path) }}" class="btn btn-info">
+                    <i class="bi bi-bar-chart"></i> 分析数据
+                </a>
+                <a href="{{ url_for('filter_data', file_path=file_path) }}" class="btn btn-warning">
+                    <i class="bi bi-funnel"></i> 筛选数据
+                </a>
+                <a href="{{ url_for('download_file', file_path=file_path) }}" class="btn btn-success">
+                    <i class="bi bi-download"></i> 下载文件
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> 返回
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 product-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="badge bg-{% if product.data_source == 'best_sellers' %}primary{% elif product.data_source == 'movers_shakers' %}success{% elif product.data_source == 'outlet' %}warning{% elif product.data_source == 'warehouse' %}secondary{% else %}info{% endif %}">
+                            {{ product.data_source|default('未知来源') }}
+                        </span>
+                        
+                        {% if product.asin %}
+                        <span class="text-muted small">{{ product.asin }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            {% if product.image_url %}
+                            <img src="{{ product.image_url }}" alt="{{ product.title }}" class="product-image">
+                            {% else %}
+                            <div class="bg-light p-4 text-center">
+                                <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                <p>无图片</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="card-title" style="height: 50px; overflow: hidden;">{{ product.title|default('未知标题') }}</h5>
+                        
+                        <div class="row g-2 mb-3">
+                            {% if product.price is defined and product.price != None %}
+                            <div class="col-6">
+                                <div class="bg-light p-2 rounded">
+                                    <small class="text-muted d-block">价格</small>
+                                    <strong>${{ product.price }}</strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if product.rating is defined and product.rating != None %}
+                            <div class="col-6">
+                                <div class="bg-light p-2 rounded">
+                                    <small class="text-muted d-block">评分</small>
+                                    <strong>{{ product.rating }} ⭐</strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if product.discount_percentage is defined and product.discount_percentage != None %}
+                            <div class="col-6">
+                                <div class="bg-light p-2 rounded">
+                                    <small class="text-muted d-block">折扣</small>
+                                    <strong>{{ product.discount_percentage }}%</strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if product.rank is defined and product.rank != None %}
+                            <div class="col-6">
+                                <div class="bg-light p-2 rounded">
+                                    <small class="text-muted d-block">排名</small>
+                                    <strong>#{{ product.rank }}</strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if product.rank_change is defined and product.rank_change %}
+                            <div class="col-6">
+                                <div class="bg-light p-2 rounded">
+                                    <small class="text-muted d-block">排名变化</small>
+                                    <strong>{{ product.rank_change }}</strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if product.item_condition is defined and product.item_condition %}
+                            <div class="col-6">
+                                <div class="bg-light p-2 rounded">
+                                    <small class="text-muted d-block">商品状态</small>
+                                    <strong>{{ product.item_condition }}</strong>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if product.potential_risk is defined and product.potential_risk %}
+                        <div class="alert alert-{% if product.potential_risk == 'low' %}success{% elif product.potential_risk == 'medium' %}warning{% else %}danger{% endif %} mb-3">
+                            <small>风险等级: <strong>{{ product.potential_risk }}</strong></small>
+                            {% if product.risk_reason is defined and product.risk_reason %}
+                            <br><small>{{ product.risk_reason }}</small>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if product.url %}
+                        <a href="{{ product.url }}" target="_blank" class="btn btn-sm btn-outline-primary w-100">
+                            <i class="bi bi-box-arrow-up-right"></i> 查看亚马逊链接
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

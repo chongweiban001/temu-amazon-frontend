@@ -1,0 +1,425 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}首页 - Temu选品分析系统{% endblock %}
+
+{% block content %}
+<div class="row fade-in">
+    <!-- 欢迎卡片 -->
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="card-title mb-4">欢迎使用 Temu 选品分析系统 <span class="badge bg-primary">Pro</span></h3>
+                        <p class="lead">这是一个专为 Temu 平台定制的亚马逊选品工具。帮助您快速筛选并分析适合 Temu 平台的亚马逊商品。</p>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5><i class="bi bi-check-circle-fill text-success me-2"></i>主要功能</h5>
+                                <ul class="list-unstyled ps-4">
+                                    <li><i class="bi bi-dot me-2"></i>自动过滤高风险类目 (FDA/CE/儿童产品)</li>
+                                    <li><i class="bi bi-dot me-2"></i>专注轻量级商品 (&lt; 1磅)</li>
+                                    <li><i class="bi bi-dot me-2"></i>优先筛选高折扣潜力产品</li>
+                                    <li><i class="bi bi-dot me-2"></i>多维度分析产品适合度</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="bi bi-gear-fill text-primary me-2"></i>快速开始</h5>
+                                <ul class="list-unstyled ps-4">
+                                    <li><i class="bi bi-1-circle me-2"></i>从左侧菜单选择<strong>数据来源</strong></li>
+                                    <li><i class="bi bi-2-circle me-2"></i>点击<strong>抓取数据</strong>获取最新产品</li>
+                                    <li><i class="bi bi-3-circle me-2"></i>进入<strong>选品分析</strong>筛选合适产品</li>
+                                    <li><i class="bi bi-4-circle me-2"></i>导出筛选结果用于 Temu 平台上架</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('crawl') }}" class="btn btn-primary btn-lg me-3">
+                                <i class="bi bi-grid me-2"></i>开始选品分析
+                            </a>
+                            <a href="{{ url_for('crawl') }}" class="btn btn-outline-primary btn-lg">
+                                <i class="bi bi-cloud-download me-2"></i>抓取最新数据
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-none d-md-block">
+                        <img src="{{ url_for('static', filename='images/temu_dashboard.png') }}" 
+                             alt="Temu选品分析系统" class="img-fluid rounded"
+                             data-src="{{ url_for('static', filename='images/temu_dashboard.png') }}"
+                             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'p-5 text-center bg-light rounded\'><i class=\'bi bi-graph-up display-1 text-primary\'></i><p class=\'mt-3\'>Temu选品分析系统</p></div>'">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 系统概览 -->
+    <div class="col-md-12 mb-4">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card bg-success text-white shadow">
+                    <div class="card-body text-center">
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                <i class="bi bi-check-circle display-4"></i>
+                            </div>
+                            <div class="col-8 text-end">
+                                <h1 class="display-4 mb-0">{{ stats.ready_count|default(4) }}</h1>
+                                <p class="mb-0">可安全上架商品</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-success bg-opacity-75 text-center">
+                        <a href="#" class="text-white text-decoration-none">
+                            <small>查看详情 <i class="bi bi-arrow-right"></i></small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card bg-warning text-white shadow">
+                    <div class="card-body text-center">
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                <i class="bi bi-exclamation-triangle display-4"></i>
+                            </div>
+                            <div class="col-8 text-end">
+                                <h1 class="display-4 mb-0">{{ stats.review_count|default(1) }}</h1>
+                                <p class="mb-0">需要审核商品</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-warning bg-opacity-75 text-center">
+                        <a href="#" class="text-white text-decoration-none">
+                            <small>查看详情 <i class="bi bi-arrow-right"></i></small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card bg-danger text-white shadow">
+                    <div class="card-body text-center">
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                <i class="bi bi-x-octagon display-4"></i>
+                            </div>
+                            <div class="col-8 text-end">
+                                <h1 class="display-4 mb-0">{{ stats.banned_count|default(1) }}</h1>
+                                <p class="mb-0">被禁止商品</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-danger bg-opacity-75 text-center">
+                        <a href="#" class="text-white text-decoration-none">
+                            <small>查看详情 <i class="bi bi-arrow-right"></i></small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card bg-info text-white shadow">
+                    <div class="card-body text-center">
+                        <div class="row align-items-center">
+                            <div class="col-4">
+                                <i class="bi bi-star display-4"></i>
+                            </div>
+                            <div class="col-8 text-end">
+                                <h1 class="display-4 mb-0">{{ stats.avg_score|default(4.3)|round(1) }}</h1>
+                                <p class="mb-0">平均评分</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-info bg-opacity-75 text-center">
+                        <a href="#" class="text-white text-decoration-none">
+                            <small>查看统计 <i class="bi bi-arrow-right"></i></small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 数据分析和统计 -->
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> 数据统计与趋势</h5>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        最近30天
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">最近7天</a></li>
+                        <li><a class="dropdown-item active" href="#">最近30天</a></li>
+                        <li><a class="dropdown-item" href="#">最近90天</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">全部时间</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- 价格区间分布图 -->
+                    <div class="col-md-6">
+                        <h6 class="text-center mb-3">价格区间分布</h6>
+                        <canvas id="price-chart" height="200"></canvas>
+                    </div>
+                    <!-- 类目分布图 -->
+                    <div class="col-md-6">
+                        <h6 class="text-center mb-3">类目分布</h6>
+                        <canvas id="category-chart" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="row text-center">
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="border rounded py-3 h-100">
+                            <h3 class="mb-0 text-primary">{{ stats.avg_discount|default(25) }}%</h3>
+                            <small class="text-muted">平均折扣幅度</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="border rounded py-3 h-100">
+                            <h3 class="mb-0 text-primary">{{ stats.avg_weight|default(0.4) }} 磅</h3>
+                            <small class="text-muted">平均商品重量</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="border rounded py-3 h-100">
+                            <h3 class="mb-0 text-primary">{{ stats.top_category|default('电子产品') }}</h3>
+                            <small class="text-muted">热门类目</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div class="border rounded py-3 h-100">
+                            <h3 class="mb-0 text-primary">${{ stats.avg_price|default(32.5) }}</h3>
+                            <small class="text-muted">平均商品价格</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 最近抓取的数据文件 -->
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-file-earmark"></i> 最近抓取的数据文件</h5>
+                <a href="{{ url_for('crawl') }}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-cloud-download me-1"></i>抓取新数据
+                </a>
+            </div>
+            <div class="card-body">
+                {% if report_files and report_files|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>文件名</th>
+                                <th>大小</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in report_files[:5] %}
+                            <tr>
+                                <td>
+                                    <i class="bi 
+                                        {% if file.name.endswith('.json') %}bi-filetype-json text-warning
+                                        {% elif file.name.endswith('.csv') %}bi-filetype-csv text-success
+                                        {% else %}bi-file-earmark text-secondary
+                                        {% endif %} me-2"></i>
+                                    {{ file.name }}
+                                </td>
+                                <td>{{ file.size }}</td>
+                                <td>{{ file.date }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('view_file', file_path=file.path) }}" class="btn btn-sm btn-info">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('analyze', file_path=file.path) }}" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-graph-up"></i>
+                                        </a>
+                                        <a href="{{ url_for('download_file', file_path=file.path) }}" class="btn btn-sm btn-success">
+                                            <i class="bi bi-download"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if report_files|length > 5 %}
+                <div class="text-center mt-3">
+                    <a href="#" class="btn btn-outline-primary btn-sm view-all-files">查看更多文件</a>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="empty-data-container">
+                    <i class="bi bi-folder2-open empty-data-icon"></i>
+                    <p class="empty-data-text mt-3">暂无数据文件。点击"抓取新数据"按钮开始获取产品数据。</p>
+                    <a href="{{ url_for('crawl') }}" class="btn btn-primary mt-2">
+                        <i class="bi bi-cloud-download me-1"></i>开始抓取数据
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 首次访问引导 -->
+<div class="modal fade" id="welcome-modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">欢迎使用 Temu 选品分析系统</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <img src="{{ url_for('static', filename='images/temu_dashboard.png') }}" 
+                             alt="Temu选品分析" class="img-fluid rounded mb-3" 
+                             data-src="{{ url_for('static', filename='images/temu_dashboard.png') }}"
+                             onerror="this.onerror=null; this.src='https://via.placeholder.com/500x300?text=Temu选品分析系统'">
+                    </div>
+                    <div class="col-md-6">
+                        <h4>快速开始指南</h4>
+                        <p>通过以下简单步骤，开始使用选品分析系统：</p>
+                        <ol>
+                            <li>抓取亚马逊商品数据</li>
+                            <li>使用筛选工具找到合适商品</li>
+                            <li>分析产品详情和风险</li>
+                            <li>导出符合条件的产品</li>
+                        </ol>
+                        <div class="mt-4">
+                            <a href="{{ url_for('crawl') }}" class="btn btn-primary">开始选品</a>
+                            <button type="button" class="btn btn-outline-secondary ms-2" data-bs-dismiss="modal">稍后再说</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/temu_image_fix.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 检查是否是首次访问
+        if (!localStorage.getItem('welcomed')) {
+            // 显示欢迎模态框
+            const welcomeModal = new bootstrap.Modal(document.getElementById('welcome-modal'));
+            welcomeModal.show();
+            
+            // 标记已显示
+            localStorage.setItem('welcomed', 'true');
+        }
+        
+        // 初始化图表
+        initCharts();
+        
+        // 查看所有文件按钮
+        const viewAllFilesBtn = document.querySelector('.view-all-files');
+        if (viewAllFilesBtn) {
+            viewAllFilesBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = "{{ url_for('index') }}?show_all_files=true";
+            });
+        }
+    });
+    
+    // 初始化图表
+    function initCharts() {
+        // 价格区间分布图
+        const priceCtx = document.getElementById('price-chart');
+        if (priceCtx) {
+            const priceChart = new Chart(priceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['0-10', '10-20', '20-30', '30-50', '50-100', '100+'],
+                    datasets: [{
+                        label: '商品数量',
+                        data: [15, 30, 25, 18, 12, 5],
+                        backgroundColor: [
+                            'rgba(67, 97, 238, 0.6)',
+                            'rgba(67, 97, 238, 0.7)',
+                            'rgba(67, 97, 238, 0.8)',
+                            'rgba(67, 97, 238, 0.9)',
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(63, 55, 201, 1)'
+                        ],
+                        borderColor: [
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(63, 55, 201, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 类目分布图
+        const categoryCtx = document.getElementById('category-chart');
+        if (categoryCtx) {
+            const categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['电子产品', '家居', '厨房', '美妆', '服装', '其他'],
+                    datasets: [{
+                        label: '商品数量',
+                        data: [35, 20, 15, 10, 12, 8],
+                        backgroundColor: [
+                            'rgba(67, 97, 238, 0.8)',
+                            'rgba(72, 149, 239, 0.8)',
+                            'rgba(76, 201, 240, 0.8)',
+                            'rgba(114, 9, 183, 0.8)',
+                            'rgba(247, 37, 133, 0.8)',
+                            'rgba(58, 12, 163, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(67, 97, 238, 1)',
+                            'rgba(72, 149, 239, 1)',
+                            'rgba(76, 201, 240, 1)',
+                            'rgba(114, 9, 183, 1)',
+                            'rgba(247, 37, 133, 1)',
+                            'rgba(58, 12, 163, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+        }
+    }
+</script>
+{% endblock %} 
