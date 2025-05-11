@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+
+{% block page_title %}利润计算器 - 亚马逊-Temu跨境选品分析系统{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">跨境电商利润计算器</h2>
+    
+    <div class="row">
+        <!-- 成本输入区域 -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">成本分析</h5>
+                </div>
+                <div class="card-body">
+                    <form id="cost-form">
+                        <div class="mb-3">
+                            <label for="product-cost" class="form-label">产品成本 ($)</label>
+                            <input type="number" class="form-control" id="product-cost" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="shipping-cost" class="form-label">运输成本 ($)</label>
+                            <input type="number" class="form-control" id="shipping-cost" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customs-duty" class="form-label">关税 (%)</label>
+                            <input type="number" class="form-control" id="customs-duty" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="platform-fee" class="form-label">平台费用 (%)</label>
+                            <input type="number" class="form-control" id="platform-fee" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="advertising-cost" class="form-label">广告成本 ($)</label>
+                            <input type="number" class="form-control" id="advertising-cost" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="return-rate" class="form-label">预计退货率 (%)</label>
+                            <input type="number" class="form-control" id="return-rate" step="0.1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">计算利润</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 结果显示区域 -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">利润分析结果</h5>
+                </div>
+                <div class="card-body">
+                    <div id="profit-results">
+                        <div class="result-item">
+                            <span class="result-label">总成本:</span>
+                            <span class="result-value" id="total-cost">$0.00</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">建议售价:</span>
+                            <span class="result-value" id="suggested-price">$0.00</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">预计利润:</span>
+                            <span class="result-value" id="estimated-profit">$0.00</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">利润率:</span>
+                            <span class="result-value" id="profit-margin">0%</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">盈亏平衡点:</span>
+                            <span class="result-value" id="break-even">0 件</span>
+                        </div>
+                    </div>
+                    
+                    <div id="profit-chart" class="mt-4"></div>
+                    
+                    <div id="analysis-suggestions" class="mt-4">
+                        <h6>分析建议</h6>
+                        <ul id="suggestion-list" class="list-unstyled">
+                            <!-- 建议将在JavaScript中动态添加 -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/profit_calculator.js') }}"></script>
+{% endblock %} 
