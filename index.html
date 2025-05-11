@@ -3,40 +3,70 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>亚马逊-Temu选品系统首页</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/main.js" defer></script> 
     <script src="js/utils/api.js" defer></script>
+    <script src="js/main.js" defer></script>
 </head>
 
 <body>
-    <nav>
-        <ul>
-            <li><a href="index.html">首页</a></li>
-            <li><a href="smart_selection.html">智能选品</a></li>
-            <li><a href="platform_comparison.html">多平台对比</a></li>
-            <li><a href="category_monitor.html">类目监控</a></li>
-            <li><a href="price_analysis.html">价格分析</a></li>
-            <li><a href="pages/data_collection.html">数据采集</a></li>
-            <li><a href="user_center.html">用户中心</a></li>
-            <li><a href="help.html">帮助</a></li>
-        </ul>
-    </nav>
-    <div class="container">
-        <h1>亚马逊-Temu选品系统</h1>
-        <p>跨境电商智能选品、数据分析与决策支持平台</p>
-        <ul class="feature-list">
-            <li>✔ 智能选品推荐，自动化决策支持</li>
-            <li>✔ 多平台多维度数据对比分析</li>
-            <li>✔ 类目监控与自动预警</li>
-            <li>✔ 价格与利润趋势分析</li>
-            <li>✔ 数据采集与批量导出</li>
-            <li>✔ 个性化用户中心与消息通知</li>
-        </ul>
-        <p style="margin-top:30px;"><a href="smart_selection.html"
-                style="color:#fff;background:#223a5e;padding:10px 20px;border-radius:5px;text-decoration:none;">立即体验智能选品</a>
-        </p>
-    </div>
+    <header>
+        <h1>亚马逊-Temu跨境选品分析系统</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">首页</a></li>
+                <li><a href="pages/data_collection.html">数据采集</a></li>
+                <li><a href="pages/selection_results.html">分析结果</a></li>
+                <li><a href="pages/platform_comparison.html">多平台对比</a></li>
+                <li><a href="pages/category_monitor.html">类目监控</a></li>
+                <li><a href="pages/price_analysis.html">价格分析</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="welcome-section">
+            <h2>亚马逊-Temu跨境选品分析系统</h2>
+            <p>跨境电商智能选品、数据分析与决策支持平台</p>
+
+            <div class="feature-list">
+                <ul>
+                    <li>✓ 智能选品推荐，自动化决策支持</li>
+                    <li>✓ 多平台多维度数据对比分析</li>
+                    <li>✓ 类目监控与自动预警</li>
+                    <li>✓ 价格与利润趋势分析</li>
+                    <li>✓ 数据采集与批量导出</li>
+                </ul>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <h3>数据采集</h3>
+                    <p>从亚马逊和Temu平台采集产品数据，包括价格、评分、销量等关键指标。</p>
+                    <a href="pages/data_collection.html" class="feature-link">开始采集 →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>风险评估</h3>
+                    <p>对产品进行专利、商标、版权和海关风险评估，降低跨境选品风险。</p>
+                    <a href="pages/data_collection.html#risk" class="feature-link">评估风险 →</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>数据分析</h3>
+                    <p>对比分析不同平台的产品数据，发现价格差异和市场机会。</p>
+                    <a href="pages/selection_results.html" class="feature-link">查看分析 →</a>
+                </div>
+            </div>
+
+            <a href="pages/data_collection.html" class="start-button">立即体验智能选品</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 亚马逊-Temu跨境选品分析系统</p>
+    </footer>
 </body>
 
 </html>
