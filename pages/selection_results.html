@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>智能选品结果</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+</head>
+
+<body>
+    <div class="container py-4">
+        <h2 class="mb-4 text-center">智能选品结果</h2>
+        <div class="d-flex flex-wrap align-items-center mb-3 gap-2">
+            <input type="text" class="form-control search-bar" id="searchInput" placeholder="搜索产品名/ASIN/类目..."
+                oninput="searchTable()">
+            <label class="ms-2"><input type="checkbox" id="showFavoritesOnly" onchange="toggleShowFavorites()">
+                只看收藏</label>
+            <button class="btn btn-secondary field-select-btn" onclick="showFieldSelect()">显示字段</button>
+            <button class="btn btn-success" onclick="exportTableToCSV('selection_results.csv', false)">导出当前页</button>
+            <button class="btn btn-primary" onclick="exportTableToCSV('all_selection_results.csv', true)">导出全部</button>
+            <button class="btn btn-warning" onclick="exportFavoritesToCSV()">导出收藏</button>
+            <span class="ms-auto text-muted" id="autoRefreshInfo">自动刷新中...</span>
+        </div>
+        <div id="fieldSelectModal" style="display:none"></div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle" id="resultsTable">
+                <thead class="table-dark" id="tableHead">
+                    <!-- 动态生成表头 -->
+                </thead>
+                <tbody id="tableBody">
+                    <!-- 动态生成表格内容 -->
+                </tbody>
+            </table>
+        </div>
+        <nav>
+            <ul class="pagination" id="pagination">
+                <!-- 分页按钮 -->
+            </ul>
+        </nav>
+    </div>
+    <script>
+        const PAGE_SIZE = 20;
+        let products = [];
+        let filteredProducts = [];
+        let currentPage = 1;
+        let allFields = [];
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let sortField = null;
+        let sortAsc = true;
+
+        // 字段中文映射
+        const fieldLabels = {
+            image: '图片',
+            asin: 'ASIN',
+            name: '产品名',
+            title: '标题',
+            category: '类目',
+            price: '价格($)',
+            profit: '利润($)',
+            sales: '销量',
+            rating: '评分',
+            risk: '风险',
+            score: '推荐分数'
+        };
+
+        // 字段显示自定义
+        let visibleFields = JSON.parse(localStorage.getItem('visibleFields') || 'null');
+
+        function fetchDataAndRender(showLoading = false) {
+            if (showLoading) {
+                document.getElementById('autoRefreshInfo').innerHTML = '<span class="refreshing">正在刷新...</span>';
+            }
+            fetch('selection_results.json?_=' + Date.now())
+                .then(response => response.json())
+                .then(data => {
+                    products = data;
+                    filteredProducts = products;
+                    allFields = getAllFields(products);
+                    if (!visibleFields) {
+                        // 默认显示全部字段
+                        visibleFields = [...allFields];
+                    } else {
+                        // 新增字段自动补充
+                        allFields.forEach(f => { if (!visibleFields.includes(f)) visibleFields.push(f); });
+                    }
+                    renderTable();
+                    renderPagination();
+                    document.getElementById('autoRefreshInfo').textContent = '自动刷新中...';
+                })
+                .catch(error => {
+                    document.getElementById('autoRefreshInfo').textContent = '数据加载失败';
+                    console.error('数据加载失败:', error);
+                });
+        }
+
+        function getAllFields(data) {
+            // 自动收集所有字段
+            const fields = new Set();
+            data.forEach(item => Object.keys(item).forEach(k => fields.add(k)));
+            // 保证常用字段优先
+            const priority = ['image', 'asin', 'name', 'category', 'price', 'profit', 'sales', 'rating', 'risk', 'score', 'title'];
+            return [...priority, ...[...fields].filter(f => !priority.includes(f))];
+        }
+
+        function renderTable() {
+            // 生成表头
+            const thead = document.getElementById('tableHead');
+            let ths = '<tr>';
+            visibleFields.forEach(field => {
+                let arrow = '';
+                if (sortField === field) {
+                    arrow = sortAsc ? ' ▲' : ' ▼';
+                }
+                ths += `<th style="cursor:pointer;" onclick="sortByField('${field}')">${fieldLabels[field] || field}${arrow}</th>`;
+            });
+            ths += '<th>收藏</th></tr>';
+            thead.innerHTML = ths;
+
+            // 排序
+            let dataToShow = [...filteredProducts];
+            if (sortField) {
+                dataToShow.sort((a, b) => {
+                    let va = a[sortField], vb = b[sortField];
+                    // 数字优先
+                    if (!isNaN(parseFloat(va)) && !isNaN(parseFloat(vb))) {
+                        va = parseFloat(va); vb = parseFloat(vb);
+                    }
+                    if (va === undefined) return 1;
+                    if (vb === undefined) return -1;
+                    if (va > vb) return sortAsc ? 1 : -1;
+                    if (va < vb) return sortAsc ? -1 : 1;
+                    return 0;
+                });
+            }
+
+            // 生成表格内容
+            const tableBody = document.getElementById('tableBody');
+            let html = '';
+            const pageData = dataToShow.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+            pageData.forEach((p, idx) => {
+                const isFav = favorites.includes(p.asin);
+                let tds = '';
+                visibleFields.forEach(field => {
+                    let value = p[field] || '';
+                    if (field === 'image') {
+                        value = value ? `<img src="${value}" class="table-img" alt="图片">` : '无图片';
+                    }
+                    if (field === 'rating' || field === 'score') {
+                        value = value ? `<span class="score-badge">${value}</span>` : '';
+                    }
+                    tds += `<td>${value}</td>`;
+                });
+                // 收藏按钮
+                tds += `<td><span class="favorite-btn${isFav ? ' fav' : ''}" onclick="toggleFavorite('${p.asin}')">★</span></td>`;
+                html += `<tr${isFav ? ' class="favorite-row"' : ''}>${tds}</tr>`;
+            });
+            tableBody.innerHTML = html;
+        }
+
+        function sortByField(field) {
+            if (sortField === field) {
+                sortAsc = !sortAsc;
+            } else {
+                sortField = field;
+                sortAsc = true;
+            }
+            renderTable();
+        }
+
+        function renderPagination() {
+            const total = filteredProducts.length;
+            const pageCount = Math.ceil(total / PAGE_SIZE);
+            const pag = document.getElementById('pagination');
+            pag.innerHTML = '';
+            if (pageCount <= 1) return;
+            for (let i = 1; i <= pageCount; i++) {
+                pag.innerHTML += `<li class="page-item${i === currentPage ? ' active' : ''}"><a class="page-link" href="#" onclick="gotoPage(${i})">${i}</a></li>`;
+            }
+        }
+        function gotoPage(page) {
+            currentPage = page;
+            renderTable();
+            renderPagination();
+        }
+
+        function searchTable() {
+            const val = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!val) {
+                filteredProducts = products;
+            } else {
+                filteredProducts = products.filter(p => {
+                    return visibleFields.some(f => String(p[f] || '').toLowerCase().includes(val));
+                });
+            }
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        function isFavorite(product) {
+            if (product.asin) return favorites.includes(product.asin);
+            return favorites.includes(product.name);
+        }
+        function toggleFavorite(asin) {
+            const idx = favorites.indexOf(asin);
+            if (idx === -1) {
+                favorites.push(asin);
+            } else {
+                favorites.splice(idx, 1);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            renderTable();
+        }
+
+        function exportTableToCSV(filename, all = false) {
+            let csv = visibleFields.map(f => fieldLabels[f] || f).join(',') + ',\n';
+            const data = all ? filteredProducts : filteredProducts.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+            data.forEach(p => {
+                csv += visibleFields.map(f => `"${(p[f] !== undefined ? p[f] : '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+        function exportFavoritesToCSV() {
+            let csv = visibleFields.map(f => fieldLabels[f] || f).join(',') + ',\n';
+            const data = products.filter(p => isFavorite(p));
+            data.forEach(p => {
+                csv += visibleFields.map(f => `"${(p[f] !== undefined ? p[f] : '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'favorites.csv';
+            link.click();
+        }
+
+        function toggleShowFavorites() {
+            const showFav = document.getElementById('showFavoritesOnly').checked;
+            if (showFav) {
+                filteredProducts = products.filter(p => isFavorite(p));
+            } else {
+                filteredProducts = products;
+            }
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+
+        // 字段选择弹窗
+        function showFieldSelect() {
+            let html = `<div class="field-select-modal" onclick="closeFieldSelect(event)">
+        <div class="field-select-box" onclick="event.stopPropagation()">
+            <div class="mb-2 fw-bold">请选择要显示的字段：</div>`;
+            allFields.forEach(f => {
+                html += `<label><input type="checkbox" value="${f}" ${visibleFields.includes(f) ? 'checked' : ''} onchange="toggleFieldVisible('${f}')"> ${fieldLabels[f] || f}</label>`;
+            });
+            html += `<div class="mt-3 text-end"><button class="btn btn-sm btn-secondary" onclick="closeFieldSelect()">关闭</button></div>
+        </div></div>`;
+            document.getElementById('fieldSelectModal').innerHTML = html;
+            document.getElementById('fieldSelectModal').style.display = 'block';
+        }
+        function closeFieldSelect(e) {
+            if (e && e.target !== document.getElementById('fieldSelectModal')) return;
+            document.getElementById('fieldSelectModal').style.display = 'none';
+        }
+        function toggleFieldVisible(field) {
+            if (visibleFields.includes(field)) {
+                if (visibleFields.length === 1) return; // 至少保留一个字段
+                visibleFields = visibleFields.filter(f => f !== field);
+            } else {
+                visibleFields.push(field);
+            }
+            localStorage.setItem('visibleFields', JSON.stringify(visibleFields));
+            renderTable();
+        }
+
+        // 自动刷新（每5分钟自动刷新一次，刷新时有动画提示）
+        setInterval(() => fetchDataAndRender(true), 5 * 60 * 1000);
+
+        // 初始化
+        fetchDataAndRender();
+    </script>
+</body>
+
+</html>

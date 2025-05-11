@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亚马逊-Temu跨境选品数据采集</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/utils/api.js" defer></script>
+    <script src="../js/main.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>亚马逊-Temu跨境选品数据采集</h1>
+        <nav>
+            <ul>
+                <li><a href="../index.html">首页</a></li>
+                <li><a href="data_collection.html" class="active">数据采集</a></li>
+                <li><a href="selection_results.html">分析结果</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="data-collection-container">
+            <h2>产品数据采集</h2>
+            <div class="platform-tabs">
+                <button class="platform-tab active" data-platform="amazon">亚马逊</button>
+                <button class="platform-tab" data-platform="temu">Temu</button>
+            </div>
+
+            <form id="data-collection-form">
+                <div class="form-group">
+                    <label for="product-url">产品链接:</label>
+                    <input type="url" id="product-url" name="product-url" required placeholder="请输入产品URL">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">产品类别:</label>
+                    <select id="category" name="category">
+                        <option value="">--请选择类别--</option>
+                        <option value="electronics">电子产品</option>
+                        <option value="home">家居用品</option>
+                        <option value="clothing">服装</option>
+                        <option value="beauty">美妆</option>
+                        <option value="toys">玩具</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="keywords">关键词:</label>
+                    <input type="text" id="keywords" name="keywords" placeholder="输入关键词，用逗号分隔">
+                </div>
+
+                <div class="form-group">
+                    <label>风险筛选:</label>
+                    <div class="risk-filters">
+                        <div class="risk-option">
+                            <input type="checkbox" id="risk-patent" name="risk-filters" value="patent">
+                            <label for="risk-patent">专利风险</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" id="risk-trademark" name="risk-filters" value="trademark">
+                            <label for="risk-trademark">商标风险</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" id="risk-copyright" name="risk-filters" value="copyright">
+                            <label for="risk-copyright">版权风险</label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="checkbox" id="risk-customs" name="risk-filters" value="customs">
+                            <label for="risk-customs">海关风险</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="collect-data-btn">采集数据</button>
+                    <button type="reset">重置</button>
+                </div>
+            </form>
+
+            <div id="collection-status" class="status-box hidden">
+                <p>数据采集中，请稍候...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div id="collection-results" class="results-container hidden">
+                <h3>采集结果</h3>
+                <div class="result-item">
+                    <div class="result-header">
+                        <h4 id="product-title"></h4>
+                        <span class="platform-tag"></span>
+                    </div>
+                    <div class="result-body">
+                        <div class="product-image">
+                            <img id="product-image" src="" alt="产品图片">
+                        </div>
+                        <div class="product-info">
+                            <p><strong>价格:</strong> <span id="product-price"></span></p>
+                            <p><strong>评分:</strong> <span id="product-rating"></span></p>
+                            <p><strong>评论数:</strong> <span id="product-reviews"></span></p>
+                            <p><strong>销量:</strong> <span id="product-sales"></span></p>
+                            <p><strong>风险评估:</strong> <span id="risk-level" class="risk-badge"></span></p>
+                        </div>
+                    </div>
+                    <div class="result-actions">
+                        <button id="save-result-btn">保存结果</button>
+                        <button id="analyze-result-btn">深入分析</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 亚马逊-Temu跨境选品分析系统. 保留所有权利.</p>
+    </footer>
+</body>
+</html>

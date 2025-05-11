@@ -1,0 +1,20 @@
+[
+  {
+    "asin": "B08N5KWB9H",
+    "title": "2020 Apple MacBook Air Laptop...",
+    "rating": "4.8",
+    "image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg"
+  },
+  {
+    "asin": "B09XXXXXXX",
+    "title": "2021 Dell XPS 13 Laptop...",
+    "rating": "4.7",
+    "image": "https://m.media-amazon.com/images/I/81mLxF1eZDL._AC_SL1500_.jpg"
+  },
+  {
+    "asin": "B07YYYYYYY",
+    "title": "2022 Lenovo ThinkPad X1...",
+    "rating": "4.6",
+    "image": "https://m.media-amazon.com/images/I/71QmFalT6FL._AC_SL1500_.jpg"
+  }
+]
