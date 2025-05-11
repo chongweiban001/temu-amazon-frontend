@@ -1,0 +1,292 @@
+/* 全局样式 */
+body {
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* 卡片样式增强 */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* 头部样式 */
+.navbar-brand {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* 标题样式 */
+h2 {
+    color: #343a40;
+    font-weight: 600;
+}
+
+h3, h4, h5, h6 {
+    color: #495057;
+}
+
+/* 表格样式 */
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+/* 利润计算器页面样式 */
+#profit-calculator-form .form-label {
+    font-weight: 500;
+}
+
+#profit-calculator-form .form-text {
+    font-size: 0.75rem;
+}
+
+#results-section .card {
+    transition: all 0.3s ease;
+}
+
+#results-section .card:hover {
+    transform: translateY(-3px);
+}
+
+/* 成本明细表格 */
+.table-sm td, .table-sm th {
+    padding: 0.4rem 0.6rem;
+}
+
+.table-sm tr.table-light th {
+    background-color: #e9ecef;
+    font-weight: 600;
+}
+
+.table-sm tr.table-success th {
+    background-color: rgba(40, 167, 69, 0.15);
+    font-weight: 600;
+}
+
+.table-sm tr.table-secondary th {
+    background-color: rgba(108, 117, 125, 0.15);
+    font-weight: 600;
+}
+
+/* 图表容器 */
+.chart-container {
+    width: 100%;
+    position: relative;
+}
+
+/* 利润指标卡片 */
+.profit-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.profit-card {
+    flex: 1;
+    min-width: 120px;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    text-align: center;
+}
+
+.profit-card h5 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.profit-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #0d6efd;
+}
+
+.profit-rate {
+    font-size: 0.85rem;
+    color: #20c997;
+}
+
+/* 成本明细区域 */
+.cost-breakdown {
+    margin-bottom: 2rem;
+}
+
+.cost-chart-container {
+    margin-bottom: 1.5rem;
+}
+
+.cost-table {
+    font-size: 0.9rem;
+}
+
+.cost-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cost-table th, .cost-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.cost-table th {
+    text-align: left;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+/* 详细成本区域 */
+#expanded-costs-section {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+}
+
+/* 不同等级的标签样式 */
+.risk-level-value.low {
+    color: #20c997;
+}
+
+.risk-level-value.medium {
+    color: #fd7e14;
+}
+
+.risk-level-value.high {
+    color: #dc3545;
+}
+
+/* 建议部分样式 */
+#suggestion-text ul {
+    padding-left: 1.5rem;
+}
+
+#suggestion-text li {
+    margin-bottom: 0.5rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 767.98px) {
+    .profit-card {
+        min-width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .cost-table {
+        font-size: 0.8rem;
+    }
+}
+
+/* 加载动画 */
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* 预设按钮 */
+.preset-btn {
+    font-size: 0.85rem;
+}
+
+/* 图标微调 */
+.bi {
+    vertical-align: -0.125em;
+}
+
+/* 提示和标签 */
+.badge {
+    padding: 0.35em 0.65em;
+}
+
+/* 利润计算器样式 */
+.result-item {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.result-label {
+    font-weight: 500;
+    color: #666;
+    margin-right: 1rem;
+}
+
+.result-value {
+    font-weight: 600;
+    color: #333;
+}
+
+#profit-results {
+    margin-bottom: 2rem;
+}
+
+#suggestion-list li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+#suggestion-list li:before {
+    content: "•";
+    position: absolute;
+    left: 0.5rem;
+    color: #666;
+}
+
+.profit-chart-container {
+    height: 300px;
+    margin: 2rem 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .col-md-6 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* 输入表单样式 */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* 按钮样式 */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* 卡片样式 */
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    border: none;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    padding: 1rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+} 
